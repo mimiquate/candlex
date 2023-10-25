@@ -3,7 +3,7 @@ defmodule Candlex.MixProject do
 
   @description "An Nx backend for candle machine learning minimalist framework"
   @source_url "https://github.com/mimiquate/candlex"
-  @version "0.1.0"
+  @version "0.1.1"
 
   def project do
     [
@@ -50,6 +50,7 @@ defmodule Candlex.MixProject do
 
   defp package do
     [
+      files: ["lib", "native", "priv", ".formatter.exs", "mix.exs", "README.md", "LICENSE"],
       licenses: ["Apache-2.0"],
       links: %{
         "GitHub" => @source_url
