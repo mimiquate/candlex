@@ -18,6 +18,8 @@ jobs:
             otp_version: 25.3.2.7
     steps:
       - uses: actions/checkout@v4
+      - run: cargo fmt --check --manifest-path=native/candlex/Cargo.toml
+        if: ${{ matrix.lint }}
       - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.otp_version}}
