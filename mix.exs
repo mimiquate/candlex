@@ -33,7 +33,7 @@ defmodule Candlex.MixProject do
   defp deps do
     [
       {:nx, "~> 0.6.2"},
-      {:rustler, "~> 0.29.1"},
+      {:rustler, "~> 0.30.0"},
 
       # Dev
       {:ex_doc, "~> 0.30.9", only: :dev, runtime: false}
