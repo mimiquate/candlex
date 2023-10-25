@@ -12,7 +12,7 @@ crate-type = ["cdylib"]
 [dependencies]
 candle-core = { git = "https://github.com/huggingface/candle" }
 half = "2.3.1"
-num-traits = "0.2.16"
+num-traits = "0.2.17"
 rustler = "0.29.1"
 statrs = "0.16.0"
 thiserror = "1.0.47"
