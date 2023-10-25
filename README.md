@@ -1,5 +1,9 @@
 # Candlex
 
+[![ci](https://github.com/mimiquate/candlex/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mimiquate/candlex/actions?query=branch%3Amain)
+[![Hex.pm](https://img.shields.io/hexpm/v/candlex.svg)](https://hex.pm/packages/candlex)
+[![Docs](https://img.shields.io/badge/docs-gray.svg)](https://hexdocs.pm/candlex)
+
 An `Nx` [backend](https://hexdocs.pm/nx/Nx.html#module-backends) for [candle](https://huggingface.github.io/candle) machine learning minimalist framework
 
 ## Installation
