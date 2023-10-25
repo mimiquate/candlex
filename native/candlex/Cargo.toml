@@ -1,0 +1,24 @@
+[package]
+name = "candlex"
+version = "0.1.0"
+authors = []
+edition = "2021"
+
+[lib]
+name = "candlex"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+candle-core = { git = "https://github.com/huggingface/candle" }
+half = "2.3.1"
+num-traits = "0.2.16"
+rustler = "0.29.1"
+statrs = "0.16.0"
+thiserror = "1.0.47"
+
+[build-dependencies]
+anyhow = "1.0.75"
+
+[features]
+cuda = ["candle-core/cuda"]
