@@ -1,6 +1,6 @@
 # Candlex
 
-**TODO: Add description**
+An `Nx` [backend](https://hexdocs.pm/nx/Nx.html#module-backends) for [candle](https://huggingface.github.io/candle) machine learning minimalist framework
 
 ## Installation
 
