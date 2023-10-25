@@ -1,14 +1,21 @@
 defmodule Candlex.MixProject do
   use Mix.Project
 
+  @description "An Nx backend for candle machine learning minimalist framework"
+  @source_url "https://github.com/mimiquate/candlex"
+  @version "0.1.0"
+
   def project do
     [
       app: :candlex,
-      version: "0.1.0",
+      description: @description,
+      version: @version,
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      docs: docs(),
+      package: package()
     ]
   end
 
@@ -26,7 +33,27 @@ defmodule Candlex.MixProject do
   defp deps do
     [
       {:nx, "~> 0.6.2"},
-      {:rustler, "~> 0.29.1"}
+      {:rustler, "~> 0.29.1"},
+
+      # Dev
+      {:ex_doc, "~> 0.30.9", only: :dev, runtime: false}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "Candlex",
+      source_url: @source_url,
+      source_ref: "v#{@version}"
+    ]
+  end
+
+  defp package do
+    [
+      licenses: ["Apache-2.0"],
+      links: %{
+        "GitHub" => @source_url
+      }
     ]
   end
 end
