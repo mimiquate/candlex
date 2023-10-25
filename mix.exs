@@ -50,6 +50,7 @@ defmodule Candlex.MixProject do
 
   defp package do
     [
+      files: ["lib", "native", "priv", ".formatter.exs", "mix.exs", "README.md", "LICENSE"],
       licenses: ["Apache-2.0"],
       links: %{
         "GitHub" => @source_url
