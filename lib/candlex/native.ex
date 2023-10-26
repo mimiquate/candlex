@@ -1,7 +1,20 @@
 defmodule Candlex.Native do
   @moduledoc false
 
-  use Rustler, otp_app: :candlex, features: Application.compile_env(:candlex, :crate_features, [])
+  version = Mix.Project.config()[:version]
+  source_url = "https://github.com/mimiquate/candlex"
+
+  use RustlerPrecompiled,
+    otp_app: :candlex,
+    features: Application.compile_env(:candlex, :crate_features, []),
+    base_url: "#{source_url}/releases/download/v#{version}",
+    force_build: System.get_env("CANDLE_BUILD") in ["1", "true"],
+    version: version,
+    targets: [
+      "x86_64-apple-darwin",
+      "x86_64-pc-windows-gnu",
+      "x86_64-unknown-linux-gnu"
+    ]
 
   # Rustler will override all the below stub functions with real NIFs
   def from_binary(_binary, _dtype, _shape, _device), do: error()

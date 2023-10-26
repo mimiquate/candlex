@@ -33,10 +33,11 @@ defmodule Candlex.MixProject do
   defp deps do
     [
       {:nx, "~> 0.6.2"},
-      {:rustler, "~> 0.30.0"},
+      {:rustler_precompiled, "~> 0.7.0"},
 
       # Dev
-      {:ex_doc, "~> 0.30.9", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.30.9", only: :dev, runtime: false},
+      {:rustler, "~> 0.30.0", optional: true}
     ]
   end
 
@@ -50,7 +51,16 @@ defmodule Candlex.MixProject do
 
   defp package do
     [
-      files: ["lib", "native", "priv", ".formatter.exs", "mix.exs", "README.md", "LICENSE"],
+      files: [
+        "lib",
+        "native",
+        "priv",
+        ".formatter.exs",
+        "mix.exs",
+        "README.md",
+        "LICENSE",
+        "checksum-*.exs"
+      ],
       licenses: ["Apache-2.0"],
       links: %{
         "GitHub" => @source_url
