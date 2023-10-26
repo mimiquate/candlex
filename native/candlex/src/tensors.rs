@@ -115,7 +115,7 @@ pub fn index_add(
 pub fn chunk(t: ExTensor, num_chunks: usize) -> Result<Vec<ExTensor>, CandlexError> {
     Ok(t.chunk(num_chunks, 0)?
         .into_iter()
-        .map(|t| ExTensor::new(t))
+        .map(ExTensor::new)
         .collect())
 }
 
@@ -447,10 +447,10 @@ custom_binary_nif!(right_shift, Shr);
 custom_binary_nif!(remainder, Remainder);
 
 fn tuple_to_vec(term: Term) -> Result<Vec<usize>, rustler::Error> {
-    Ok(rustler::types::tuple::get_tuple(term)?
+    rustler::types::tuple::get_tuple(term)?
         .iter()
         .map(|elem| elem.decode())
-        .collect::<Result<_, _>>()?)
+        .collect::<Result<_, _>>()
 }
 
 fn vec_to_tuple(env: Env, vec: Vec<usize>) -> Result<Term, rustler::Error> {
