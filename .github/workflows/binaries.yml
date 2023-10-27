@@ -34,7 +34,7 @@ jobs:
       - run: rustup target add ${{ matrix.job.target }}
       - run: echo "PROJECT_VERSION=$(sed -n 's/^  @version "\(.*\)"/\1/p' mix.exs | head -n1)" >> $GITHUB_ENV
 
-      - uses: philss/rustler-precompiled-action@v1.1.1
+      - uses: philss/rustler-precompiled-action@main
         id: precompile
         with:
           project-dir: "native/candlex"
