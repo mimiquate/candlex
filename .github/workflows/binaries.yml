@@ -42,6 +42,9 @@ jobs:
           project-version: ${{ env.PROJECT_VERSION }}
           target: ${{ matrix.job.target }}
           nif-version: ${{ matrix.nif_version }}
+          # use-cross: false doesn't work
+          # I think because of https://github.com/actions/runner/issues/1173
+          use-cross: null
 
       - uses: softprops/action-gh-release@v1
         with:
