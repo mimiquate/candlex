@@ -3,7 +3,7 @@ defmodule Candlex.MixProject do
 
   @description "An Nx backend for candle machine learning minimalist framework"
   @source_url "https://github.com/mimiquate/candlex"
-  @version "0.1.2-alpha2"
+  @version "0.1.2"
 
   def project do
     [
@@ -59,6 +59,7 @@ defmodule Candlex.MixProject do
         "priv",
         ".formatter.exs",
         "mix.exs",
+        "CHANGELOG.md",
         "README.md",
         "LICENSE",
         "checksum-*.exs"
