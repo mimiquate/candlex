@@ -28,11 +28,12 @@ jobs:
           - { target: x86_64-apple-darwin , os: macos-12 }
           - { target: x86_64-pc-windows-gnu , os: windows-2022 }
           - { target: x86_64-unknown-linux-gnu , os: ubuntu-22.04 }
+    env:
+      PROJECT_VERSION: "0.1.1"
 
     steps:
       - uses: actions/checkout@v4
       - run: rustup target add ${{ matrix.job.target }}
-      - run: echo "PROJECT_VERSION=$(sed -n 's/^  @version "\(.*\)"/\1/p' mix.exs | head -n1)" >> $GITHUB_ENV
 
       - uses: philss/rustler-precompiled-action@main
         id: precompile
