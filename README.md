@@ -25,6 +25,22 @@ be found at <https://hexdocs.pm/candlex>.
 
 ## Usage
 
+Just configure Nx to default to Candlex backend in your configuration:
+
+```elixir
+# Possibly config/runtime.exs
+
+config :nx, default_backend: Candlex.Backend
+```
+
+or in your scripts, precede all your Nx operations with:
+
+```elixir
+Nx.default_backend(Candlex.Backend)
+```
+
+More details in [Nx backends](https://hexdocs.pm/nx/Nx.html#module-backends)
+
 #### `NATIVE_BUILD`
 
 Defaults to `false`. If `true` the native binary is built locally, which may be useful
