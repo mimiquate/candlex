@@ -23,6 +23,25 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at <https://hexdocs.pm/candlex>.
 
+## Usage
+
+#### `NATIVE_BUILD`
+
+Defaults to `false`. If `true` the native binary is built locally, which may be useful
+if no precompiled binary is available for your target environment. Once set, you
+must run `mix deps.clean candlex --build` explicitly to force to recompile.
+Building has a number of dependencies, see *Building from source* below.
+
+## Building from source
+
+To build the native binary locally you need to set `NATIVE_BUILD=true`.
+Keep in mind that the compilation usually takes time.
+
+You will need the following installed in your system for the compilation:
+
+  * [Git](https://git-scm.com) for fetching candle-core source
+  * [Rust](https://www.rust-lang.org) with cargo to compile rustler NIFs
+
 ## Releasing
 
 To publish a new version of this package:
