@@ -1,14 +1,17 @@
 defmodule Candlex.Native do
   @moduledoc false
 
-  version = Mix.Project.config()[:version]
-  source_url = "https://github.com/mimiquate/candlex"
+  mix_config = Mix.Project.config()
+  version = mix_config[:version]
+  source_url = mix_config[:package][:links]["GitHub"]
+  mode = if Mix.env() in [:dev, :test], do: :debug, else: :release
 
   use RustlerPrecompiled,
     otp_app: :candlex,
     features: Application.compile_env(:candlex, :crate_features, []),
     base_url: "#{source_url}/releases/download/v#{version}",
     force_build: System.get_env("CANDLE_BUILD") in ["1", "true"],
+    mode: mode,
     version: version,
     nif_versions: ["2.16"],
     targets: [
