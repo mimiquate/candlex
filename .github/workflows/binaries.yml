@@ -32,7 +32,7 @@ jobs:
           - { target: x86_64-pc-windows-msvc , os: windows-2022 }
           - { target: x86_64-unknown-linux-gnu , os: ubuntu-22.04 }
     env:
-      PROJECT_VERSION: "0.1.2-alpha1"
+      PROJECT_VERSION: "0.1.2-alpha2"
 
     steps:
       - uses: actions/checkout@v4
