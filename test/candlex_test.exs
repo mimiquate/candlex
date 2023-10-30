@@ -740,6 +740,10 @@ defmodule CandlexTest do
       t([-2.0, -1, 0, 1, 2])
       |> Nx.abs()
       |> assert_equal(t([2, 1, 0, 1, 2]))
+
+      t([-2, -1, 0, 1, 2])
+      |> Nx.abs()
+      |> assert_equal(t([2, 1, 0, 1, 2]))
     end
 
     test "sqrt" do
