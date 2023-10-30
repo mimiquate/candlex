@@ -10,6 +10,7 @@ defmodule Candlex.Native do
     base_url: "#{source_url}/releases/download/v#{version}",
     force_build: System.get_env("CANDLE_BUILD") in ["1", "true"],
     version: version,
+    nif_versions: ["2.16"],
     targets: [
       "x86_64-apple-darwin",
       "x86_64-pc-windows-gnu",
