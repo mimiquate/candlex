@@ -76,8 +76,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - run: apt update && apt install -y bash curl
+      - run: apt update && apt install -y curl
       - uses: dtolnay/rust-toolchain@stable
+      - run: cargo --version
+        shell: bash
       - run: rustup target add ${{ matrix.target }}
 
       - uses: philss/rustler-precompiled-action@main
