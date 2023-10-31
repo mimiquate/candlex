@@ -76,6 +76,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - run: apt update && apt install -y curl
       - uses: dtolnay/rust-toolchain@stable
       - run: rustup target add ${{ matrix.target }}
 
