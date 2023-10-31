@@ -76,7 +76,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - run: apt update && apt install -y curl
+      - run: apt update && apt install -y curl git
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo --version
         shell: bash
