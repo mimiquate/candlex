@@ -36,7 +36,7 @@ defmodule Candlex.MixProject do
       {:rustler_precompiled, "~> 0.7.0"},
 
       # Optional
-      {:rustler, "~> 0.30.0", optional: true},
+      {:rustler, "~> 0.29", optional: true},
 
       # Dev
       {:ex_doc, "~> 0.30.9", only: :dev, runtime: false}
