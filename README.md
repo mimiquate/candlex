@@ -62,7 +62,7 @@ You will need the following installed in your system for the compilation:
 
 To publish a new version of this package:
 
-1. Update `@version` in `mix.exs` and `PROJECT_VERSION` in `.github/workflows/binaries.yml`.
+1. Update `@version` in `mix.exs` and `project-version` in `.github/workflows/binaries.yml`.
 1. `git tag -s <tag-version>` to create new signed tag.
 1. `git push origin <tag-version>` to push the tag.
 1. Wait for the `binaries.yml` GitHub workflow to build all the NIF binaries.
