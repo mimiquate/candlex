@@ -107,7 +107,8 @@ defmodule Candlex.Native do
         :quotient,
         :remainder,
         :right_shift,
-        :subtract
+        :subtract,
+        :vec_dot
       ] do
     def unquote(op)(_left, _right), do: error()
   end

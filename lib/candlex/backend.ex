@@ -509,6 +509,23 @@ defmodule Candlex.Backend do
   def dot(
         %T{type: _out_type} = out,
         %T{shape: left_shape, type: _left_type} = left,
+        [0] = _left_axes,
+        [] = _left_batched_axes,
+        %T{shape: right_shape, type: _right_type} = right,
+        [0] = _right_axes,
+        [] = _right_batched_axes
+      )
+      when tuple_size(left_shape) == 1 and tuple_size(right_shape) == 1 do
+    from_nx(left)
+    |> Native.vec_dot(from_nx(right))
+    |> unwrap!()
+    |> to_nx(out)
+  end
+
+  @impl true
+  def dot(
+        %T{type: _out_type} = out,
+        %T{shape: left_shape, type: _left_type} = left,
         [1] = _left_axes,
         [] = _left_batched_axes,
         %T{shape: right_shape, type: _right_type} = right,

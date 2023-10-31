@@ -511,14 +511,13 @@ defmodule CandlexTest do
 
       # Dot product of vectors
 
-      # TODO:
-      # t([1, 2, 3])
-      # |> Nx.dot(t([4, 5, 6]))
-      # |> assert_equal(t(32))
+      t([1, 2, 3])
+      |> Nx.dot(t([4, 5, 6]))
+      |> assert_equal(t(32))
 
-      # t([1.0, 2.0, 3.0])
-      # |> Nx.dot(t([1, 2, 3]))
-      # |> assert_equal(t(14.0))
+      t([1.0, 2, 3])
+      |> Nx.dot(t([1.0, 2, 3]))
+      |> assert_equal(t(14.0))
 
       # Dot product of matrices (2-D tensors)
 
