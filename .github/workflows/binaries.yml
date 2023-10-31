@@ -23,15 +23,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        - target: aarch64-apple-darwin
-          os: macos-12
-        - target: aarch64-unknown-linux-gnu
-          os: ubuntu-22.04
-          use-cross: true
-        - target: x86_64-apple-darwin
-          os: macos-12
-        - target: x86_64-unknown-linux-gnu
-          os: ubuntu-22.04
+        include:
+          - target: aarch64-apple-darwin
+            os: macos-12
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-22.04
+            use-cross: true
+          - target: x86_64-apple-darwin
+            os: macos-12
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-22.04
     env:
       VERSION: "0.1.2"
 
