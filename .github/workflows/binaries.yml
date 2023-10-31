@@ -80,7 +80,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - run: rustup target add ${{ matrix.target }}
 
-      - uses: mimiquate/rustler-precompiled-action@debug
+      - uses: mimiquate/rustler-precompiled-action@fix-build-sh-with-container
         id: precompile
         with:
           project-dir: ${{ env.PROJECT_DIR }}
