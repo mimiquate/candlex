@@ -14,8 +14,14 @@ on:
       - ".github/workflows/binaries.yml"
   workflow_dispatch:
 
+env:
+  PROJECT_NAME: "candlex"
+  PROJECT_DIR: "native/candlex"
+  PROJECT_VERSION: "0.1.2"
+  NIF_VERSION: "2.16"
+
 jobs:
-  build_binary:
+  build_cpu:
     name: ${{ matrix.target }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     permissions:
@@ -40,12 +46,49 @@ jobs:
       - uses: philss/rustler-precompiled-action@main
         id: precompile
         with:
-          project-dir: "native/candlex"
-          project-name: candlex
-          project-version: "0.1.2"
+          project-dir: ${{ env.PROJECT_DIR }}
+          project-name: ${{ env.PROJECT_NAME }}
+          project-version: ${{ env.PROJECT_VERSION }}
           target: ${{ matrix.target }}
           use-cross: ${{ matrix.use-cross }}
-          nif-version: "2.16"
+          nif-version: ${{ env.NIF_VERSION }}
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: ${{ steps.precompile.outputs.file-path }}
+        if: startsWith(github.ref, 'refs/tags/')
+
+  build_cuda:
+    name: ${{ matrix.job.target }}
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-22.04
+
+    container:
+      image: nvidia/cuda:12.2.2-devel-ubuntu22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup target add ${{ matrix.job.target }}
+
+      - uses: philss/rustler-precompiled-action@main
+        id: precompile
+        with:
+          project-dir: ${{ env.PROJECT_DIR }}
+          project-name: ${{ env.PROJECT_NAME }}
+          project-version: ${{ env.PROJECT_VERSION }}
+          target: ${{ matrix.target }}
+          use-cross: null
+          nif-version: ${{ env.NIF_VERSION }}
+          variant: cuda
+          cargo-args: "--features cuda"
 
       - uses: softprops/action-gh-release@v1
         with:
