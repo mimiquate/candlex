@@ -16,35 +16,36 @@ on:
 
 jobs:
   build_binary:
-    name: ${{ matrix.job.target }} / ${{ matrix.job.os }}
-    runs-on: ${{ matrix.job.os }}
+    name: ${{ matrix.target }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: write
     strategy:
       fail-fast: false
       matrix:
-        nif_version: ["2.16"]
-        job:
-          - { target: aarch64-apple-darwin , os: macos-12 }
-          - { target: aarch64-unknown-linux-gnu , os: ubuntu-22.04, use-cross: true }
-          - { target: x86_64-apple-darwin , os: macos-12 }
-          - { target: x86_64-unknown-linux-gnu , os: ubuntu-22.04 }
-    env:
-      VERSION: "0.1.2"
-
+        include:
+          - target: aarch64-apple-darwin
+            os: macos-12
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-22.04
+            use-cross: true
+          - target: x86_64-apple-darwin
+            os: macos-12
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - run: rustup target add ${{ matrix.job.target }}
+      - run: rustup target add ${{ matrix.target }}
 
       - uses: philss/rustler-precompiled-action@main
         id: precompile
         with:
           project-dir: "native/candlex"
           project-name: candlex
-          project-version: ${{ env.VERSION }}
-          target: ${{ matrix.job.target }}
-          use-cross: ${{ matrix.job.use-cross }}
-          nif-version: ${{ matrix.nif_version }}
+          project-version: "0.1.2"
+          target: ${{ matrix.target }}
+          use-cross: ${{ matrix.use-cross }}
+          nif-version: "2.16"
 
       - uses: softprops/action-gh-release@v1
         with:
