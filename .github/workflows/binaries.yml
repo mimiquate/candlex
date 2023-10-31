@@ -22,7 +22,7 @@ env:
 
 jobs:
   build_cpu:
-    name: ${{ matrix.target }} / ${{ matrix.os }}
+    name: cpu / ${{ matrix.target }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
@@ -60,7 +60,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
 
   build_cuda:
-    name: ${{ matrix.job.target }}
+    name: cuda / ${{ matrix.target }} / ${{ matrix.os }}
     runs-on: ubuntu-22.04
     permissions:
       contents: write
@@ -76,7 +76,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - run: rustup target add ${{ matrix.job.target }}
+      - run: rustup target add ${{ matrix.target }}
 
       - uses: philss/rustler-precompiled-action@main
         id: precompile
