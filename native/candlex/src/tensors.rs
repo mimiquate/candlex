@@ -174,17 +174,9 @@ pub fn all(ex_tensor: ExTensor) -> Result<ExTensor, CandlexError> {
 
 #[rustler::nif(schedule = "DirtyCpu")]
 pub fn all_within_dim(ex_tensor: ExTensor, dim: usize) -> Result<ExTensor, CandlexError> {
-    let device = ex_tensor.device();
-    let dims = ex_tensor.dims();
-    let t_dtype = ex_tensor.dtype();
-    let zeros = Tensor::zeros(dims, t_dtype, device)?;
-    let out = ex_tensor.ne(&zeros)?;
-
-    if out.rank() > 0 {
-        Ok(ExTensor::new(out.min(dim)?))
-    } else {
-        Ok(ExTensor::new(out))
-    }
+    Ok(ExTensor::new(
+        ex_tensor.ne(&ex_tensor.zeros_like()?)?.min(dim)?,
+    ))
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
