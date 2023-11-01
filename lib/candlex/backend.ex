@@ -119,7 +119,6 @@ defmodule Candlex.Backend do
 
   @impl true
   def all(%T{} = out, %T{} = tensor, opts) do
-    # keep_axes = opts[:keep_axes]
     case opts[:axes] do
       nil ->
         from_nx(tensor)
@@ -127,7 +126,7 @@ defmodule Candlex.Backend do
 
       [axis] ->
         from_nx(tensor)
-        |> Native.all_within_dim(axis)
+        |> Native.all_within_dim(axis, opts[:keep_axes])
     end
     |> unwrap!()
     |> to_nx(out)

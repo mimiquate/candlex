@@ -2163,6 +2163,15 @@ defmodule CandlexTest do
       t([[-1, 0, 1], [2, 3, 4]], names: [:x, :y])
       |> Nx.all(axes: [:y])
       |> assert_equal(t([0, 1]))
+
+      t([[-1, 0, 1], [2, 3, 4]], names: [:x, :y])
+      |> Nx.all(axes: [:y], keep_axes: true)
+      |> assert_equal(
+        t([
+          [0],
+          [1]
+        ])
+      )
     end
 
     if Candlex.Backend.cuda_available?() do
