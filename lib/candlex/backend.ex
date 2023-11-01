@@ -118,9 +118,17 @@ defmodule Candlex.Backend do
   # Aggregates
 
   @impl true
-  def all(%T{} = out, %T{} = tensor, _opts) do
-    from_nx(tensor)
-    |> Native.all()
+  def all(%T{} = out, %T{} = tensor, opts) do
+    # keep_axes = opts[:keep_axes]
+    case opts[:axes] do
+      nil ->
+        from_nx(tensor)
+        |> Native.all()
+
+      [axis] ->
+        from_nx(tensor)
+        |> Native.all_within_dim(axis)
+    end
     |> unwrap!()
     |> to_nx(out)
   end

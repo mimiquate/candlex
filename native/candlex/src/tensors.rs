@@ -173,6 +173,21 @@ pub fn all(ex_tensor: ExTensor) -> Result<ExTensor, CandlexError> {
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
+pub fn all_within_dim(ex_tensor: ExTensor, dim: usize) -> Result<ExTensor, CandlexError> {
+    let device = ex_tensor.device();
+    let dims = ex_tensor.dims();
+    let t_dtype = ex_tensor.dtype();
+    let zeros = Tensor::zeros(dims, t_dtype, device)?;
+    let out = ex_tensor.ne(&zeros)?;
+
+    if out.rank() > 0 {
+        Ok(ExTensor::new(out.min(dim)?))
+    } else {
+        Ok(ExTensor::new(out))
+    }
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
 pub fn argmax(ex_tensor: ExTensor, dim: usize, keep_dim: bool) -> Result<ExTensor, CandlexError> {
     let t = if keep_dim {
         ex_tensor.argmax_keepdim(dim)?

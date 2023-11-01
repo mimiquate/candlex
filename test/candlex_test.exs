@@ -2144,17 +2144,25 @@ defmodule CandlexTest do
     end
 
     test "all" do
+      t(0)
+      |> Nx.all()
+      |> assert_equal(t(0))
+
+      t(10)
+      |> Nx.all()
+      |> assert_equal(t(1))
+
       t([0, 1, 2])
       |> Nx.all()
       |> assert_equal(t(0))
 
-      # t([[-1, 0, 1], [2, 3, 4]], names: [:x, :y])
-      # |> Nx.all(axes: [:x])
-      # |> assert_equal(t([1, 0, 1]))
+      t([[-1, 0, 1], [2, 3, 4]], names: [:x, :y])
+      |> Nx.all(axes: [:x])
+      |> assert_equal(t([1, 0, 1]))
 
-      # t([[-1, 0, 1], [2, 3, 4]], names: [:x, :y])
-      # |> Nx.all(axes: [:y])
-      # |> assert_equal(t([0, 1]))
+      t([[-1, 0, 1], [2, 3, 4]], names: [:x, :y])
+      |> Nx.all(axes: [:y])
+      |> assert_equal(t([0, 1]))
     end
 
     if Candlex.Backend.cuda_available?() do

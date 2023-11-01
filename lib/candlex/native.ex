@@ -25,6 +25,7 @@ defmodule Candlex.Native do
   def from_binary(_binary, _dtype, _shape, _device), do: error()
   def to_binary(_tensor), do: error()
   def all(_tensor), do: error()
+  def all_within_dim(_tensor, _dim), do: error()
   def where_cond(_tensor, _on_true, _on_false), do: error()
   def narrow(_tensor, _dim, _start, _length), do: error()
   def gather(_tensor, _indexes, _dim), do: error()
