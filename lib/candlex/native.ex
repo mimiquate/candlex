@@ -89,6 +89,7 @@ defmodule Candlex.Native do
         :bitwise_or,
         :bitwise_xor,
         :divide,
+        :dot,
         :equal,
         :greater,
         :greater_equal,
@@ -107,8 +108,7 @@ defmodule Candlex.Native do
         :quotient,
         :remainder,
         :right_shift,
-        :subtract,
-        :vec_dot
+        :subtract
       ] do
     def unquote(op)(_left, _right), do: error()
   end
