@@ -124,9 +124,9 @@ defmodule Candlex.Backend do
         from_nx(tensor)
         |> Native.all()
 
-      [axis] ->
+      axes ->
         from_nx(tensor)
-        |> Native.all_within_dim(axis, opts[:keep_axes])
+        |> Native.all_within_dims(axes, opts[:keep_axes])
     end
     |> unwrap!()
     |> to_nx(out)
