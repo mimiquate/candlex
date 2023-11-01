@@ -548,12 +548,12 @@ defmodule CandlexTest do
 
       t([[[1.0, 2], [3, 4]], [[5, 6], [7, 8]]])
       |> Nx.dot(t([5.0, 10]))
-      |> assert_equal(t(
-        [
+      |> assert_equal(
+        t([
           [25, 55],
           [85, 115]
-        ]
-      ))
+        ])
+      )
 
       # t([5.0, 10], names: [:x])
       # |> Nx.dot(t([[1.0, 2, 3], [4, 5, 6]], names: [:i, :j]))

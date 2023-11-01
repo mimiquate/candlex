@@ -515,7 +515,8 @@ defmodule Candlex.Backend do
         [0] = _right_axes,
         [] = _right_batched_axes
       )
-    when tuple_size(left_shape) >= 1 and tuple_size(right_shape) == 1 and left_axis == tuple_size(left_shape) - 1 do
+      when tuple_size(left_shape) >= 1 and tuple_size(right_shape) == 1 and
+             left_axis == tuple_size(left_shape) - 1 do
     from_nx(left)
     |> Native.dot(from_nx(right))
     |> unwrap!()
