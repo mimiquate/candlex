@@ -195,12 +195,11 @@ pub fn all_within_dims(
 
 #[rustler::nif(schedule = "DirtyCpu")]
 pub fn any(ex_tensor: ExTensor) -> Result<ExTensor, CandlexError> {
-    Ok(ExTensor::new(
-        ex_tensor
-            .flatten_all()?
-            .ne(&ex_tensor.zeros_like()?)?
-            .max(0)?,
-    ))
+    Ok(ExTensor::new(_any(
+        &ex_tensor.flatten_all()?,
+        vec![0],
+        false,
+    )?))
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
@@ -209,9 +208,13 @@ pub fn any_within_dims(
     dims: Vec<usize>,
     keep_dims: bool,
 ) -> Result<ExTensor, CandlexError> {
-    let comparison = ex_tensor.ne(&ex_tensor.zeros_like()?)?;
+    Ok(ExTensor::new(_any(ex_tensor.deref(), dims, keep_dims)?))
+}
 
-    let tensor = if keep_dims {
+fn _any(tensor: &Tensor, dims: Vec<usize>, keep_dims: bool) -> Result<Tensor, CandlexError> {
+    let comparison = tensor.ne(&tensor.zeros_like()?)?;
+
+    let result = if keep_dims {
         dims.iter()
             .rev()
             .fold(comparison, |t, dim| t.max_keepdim(*dim).unwrap())
@@ -221,7 +224,7 @@ pub fn any_within_dims(
             .fold(comparison, |t, dim| t.max(*dim).unwrap())
     };
 
-    Ok(ExTensor::new(tensor))
+    Ok(result)
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
