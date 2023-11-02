@@ -539,6 +539,8 @@ defmodule Candlex.Backend do
       )
       when tuple_size(left_shape) >= 1 and tuple_size(right_shape) == 1 and
              left_axis == tuple_size(left_shape) - 1 do
+    {left, right} = maybe_upcast(left, right)
+
     from_nx(left)
     |> Native.dot(from_nx(right))
     |> unwrap!()
@@ -555,6 +557,8 @@ defmodule Candlex.Backend do
         [] = _right_batched_axes
       )
       when tuple_size(left_shape) == 2 and tuple_size(right_shape) == 2 do
+    {left, right} = maybe_upcast(left, right)
+
     Native.matmul(
       from_nx(left),
       from_nx(right)

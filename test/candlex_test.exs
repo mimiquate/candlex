@@ -516,7 +516,7 @@ defmodule CandlexTest do
       |> assert_equal(t(32))
 
       t([1.0, 2, 3])
-      |> Nx.dot(t([1.0, 2, 3]))
+      |> Nx.dot(t([1, 2, 3]))
       |> assert_equal(t(14.0))
 
       # Dot product of matrices (2-D tensors)
@@ -532,7 +532,7 @@ defmodule CandlexTest do
       # ))
 
       t([[1.0, 2, 3], [4, 5, 6]])
-      |> Nx.dot(t([[7.0, 8], [9, 10], [11, 12]]))
+      |> Nx.dot(t([[7, 8], [9, 10], [11, 12]]))
       |> assert_equal(
         t([
           [58.0, 64],
@@ -547,10 +547,10 @@ defmodule CandlexTest do
       |> assert_equal(t([0.0]))
 
       t([[[1.0, 2], [3, 4]], [[5, 6], [7, 8]]])
-      |> Nx.dot(t([5.0, 10]))
+      |> Nx.dot(t([5, 10]))
       |> assert_equal(
         t([
-          [25, 55],
+          [25.0, 55],
           [85, 115]
         ])
       )
