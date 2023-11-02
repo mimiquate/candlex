@@ -511,14 +511,13 @@ defmodule CandlexTest do
 
       # Dot product of vectors
 
-      # TODO:
-      # t([1, 2, 3])
-      # |> Nx.dot(t([4, 5, 6]))
-      # |> assert_equal(t(32))
+      t([1, 2, 3])
+      |> Nx.dot(t([4, 5, 6]))
+      |> assert_equal(t(32))
 
-      # t([1.0, 2.0, 3.0])
-      # |> Nx.dot(t([1, 2, 3]))
-      # |> assert_equal(t(14.0))
+      t([1.0, 2, 3])
+      |> Nx.dot(t([1, 2, 3]))
+      |> assert_equal(t(14.0))
 
       # Dot product of matrices (2-D tensors)
 
@@ -543,14 +542,18 @@ defmodule CandlexTest do
 
       # Dot product of vector and n-D tensor
 
-      # t([[[1.0, 2], [3, 4]], [[5, 6], [7, 8]]], names: [:i, :j, :k])
-      # |> Nx.dot(t([5.0, 10], names: [:x]))
-      # |> assert_equal(t(
-      #   [
-      #     [25, 55],
-      #     [85, 115]
-      #   ]
-      # ))
+      t([[0.0]])
+      |> Nx.dot(t([55.0]))
+      |> assert_equal(t([0.0]))
+
+      t([[[1.0, 2], [3, 4]], [[5, 6], [7, 8]]])
+      |> Nx.dot(t([5, 10]))
+      |> assert_equal(
+        t([
+          [25.0, 55],
+          [85, 115]
+        ])
+      )
 
       # t([5.0, 10], names: [:x])
       # |> Nx.dot(t([[1.0, 2, 3], [4, 5, 6]], names: [:i, :j]))

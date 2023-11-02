@@ -362,6 +362,14 @@ pub fn divide(left: ExTensor, right: ExTensor) -> Result<ExTensor, CandlexError>
     ))
 }
 
+#[rustler::nif(schedule = "DirtyCpu")]
+pub fn dot(left: ExTensor, right: ExTensor) -> Result<ExTensor, CandlexError> {
+    Ok(ExTensor::new(
+        left.mul(&right.broadcast_as(left.shape())?)?
+            .sum(left.rank() - 1)?,
+    ))
+}
+
 macro_rules! unary_nif {
     ($nif_name:ident, $native_fn_name:ident) => {
         #[rustler::nif(schedule = "DirtyCpu")]

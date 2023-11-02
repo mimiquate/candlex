@@ -92,6 +92,7 @@ defmodule Candlex.Native do
         :bitwise_or,
         :bitwise_xor,
         :divide,
+        :dot,
         :equal,
         :greater,
         :greater_equal,
