@@ -154,22 +154,11 @@ pub fn arange(
 
 #[rustler::nif(schedule = "DirtyCpu")]
 pub fn all(ex_tensor: ExTensor) -> Result<ExTensor, CandlexError> {
-    let device = ex_tensor.device();
-    let t = ex_tensor.flatten_all()?;
-    let dims = t.shape().dims();
-    let on_true = Tensor::ones(dims, DType::U8, device)?;
-    let on_false = Tensor::zeros(dims, DType::U8, device)?;
-
-    let bool_scalar = match t
-        .where_cond(&on_true, &on_false)?
-        .min(0)?
-        .to_scalar::<u8>()?
-    {
-        0 => 0u8,
-        _ => 1u8,
-    };
-
-    Ok(ExTensor::new(Tensor::new(bool_scalar, device)?))
+    Ok(ExTensor::new(_all(
+        &ex_tensor.flatten_all()?,
+        vec![0],
+        false,
+    )?))
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
@@ -178,19 +167,7 @@ pub fn all_within_dims(
     dims: Vec<usize>,
     keep_dims: bool,
 ) -> Result<ExTensor, CandlexError> {
-    let comparison = ex_tensor.ne(&ex_tensor.zeros_like()?)?;
-
-    let tensor = if keep_dims {
-        dims.iter()
-            .rev()
-            .fold(comparison, |t, dim| t.min_keepdim(*dim).unwrap())
-    } else {
-        dims.iter()
-            .rev()
-            .fold(comparison, |t, dim| t.min(*dim).unwrap())
-    };
-
-    Ok(ExTensor::new(tensor))
+    Ok(ExTensor::new(_all(ex_tensor.deref(), dims, keep_dims)?))
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
@@ -496,6 +473,22 @@ fn _any(tensor: &Tensor, dims: Vec<usize>, keep_dims: bool) -> Result<Tensor, Ca
         dims.iter()
             .rev()
             .fold(comparison, |t, dim| t.max(*dim).unwrap())
+    };
+
+    Ok(result)
+}
+
+fn _all(tensor: &Tensor, dims: Vec<usize>, keep_dims: bool) -> Result<Tensor, CandlexError> {
+    let comparison = tensor.ne(&tensor.zeros_like()?)?;
+
+    let result = if keep_dims {
+        dims.iter()
+            .rev()
+            .fold(comparison, |t, dim| t.min_keepdim(*dim).unwrap())
+    } else {
+        dims.iter()
+            .rev()
+            .fold(comparison, |t, dim| t.min(*dim).unwrap())
     };
 
     Ok(result)
