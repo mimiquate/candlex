@@ -173,6 +173,27 @@ pub fn all(ex_tensor: ExTensor) -> Result<ExTensor, CandlexError> {
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
+pub fn all_within_dims(
+    ex_tensor: ExTensor,
+    dims: Vec<usize>,
+    keep_dims: bool,
+) -> Result<ExTensor, CandlexError> {
+    let comparison = ex_tensor.ne(&ex_tensor.zeros_like()?)?;
+
+    let tensor = if keep_dims {
+        dims.iter()
+            .rev()
+            .fold(comparison, |t, dim| t.min_keepdim(*dim).unwrap())
+    } else {
+        dims.iter()
+            .rev()
+            .fold(comparison, |t, dim| t.min(*dim).unwrap())
+    };
+
+    Ok(ExTensor::new(tensor))
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
 pub fn argmax(ex_tensor: ExTensor, dim: usize, keep_dim: bool) -> Result<ExTensor, CandlexError> {
     let t = if keep_dim {
         ex_tensor.argmax_keepdim(dim)?
