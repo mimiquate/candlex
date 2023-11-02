@@ -2222,6 +2222,30 @@ defmodule CandlexTest do
       )
     end
 
+    test "any" do
+      t([0, 1, 2])
+      |> Nx.any()
+      |> assert_equal(t(1))
+
+      t([[0, 1, 0], [0, 1, 2]], names: [:x, :y])
+      |> Nx.any(axes: [:x])
+      |> assert_equal(t([0, 1, 1]))
+
+      t([[0, 1, 0], [0, 1, 2]], names: [:x, :y])
+      |> Nx.any(axes: [:y])
+      |> assert_equal(t([1, 1]))
+
+      tensor = t([[0, 1, 0], [0, 1, 2]], names: [:x, :y])
+
+      tensor
+      |> Nx.any(axes: [:x], keep_axes: true)
+      |> assert_equal(t([[0, 1, 1]]))
+
+      tensor
+      |> Nx.any(axes: [:y], keep_axes: true)
+      |> assert_equal(t([[1], [1]]))
+    end
+
     if Candlex.Backend.cuda_available?() do
       test "different devices" do
         t([1, 2, 3], backend: {Candlex.Backend, device: :cpu})

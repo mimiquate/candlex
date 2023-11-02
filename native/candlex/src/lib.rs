@@ -43,6 +43,8 @@ rustler::init! {
         tensors::less_equal,
         tensors::all,
         tensors::all_within_dims,
+        tensors::any,
+        tensors::any_within_dims,
         tensors::sum,
         tensors::dtype,
         tensors::t_shape,

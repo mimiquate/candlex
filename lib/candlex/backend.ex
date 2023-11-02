@@ -133,6 +133,21 @@ defmodule Candlex.Backend do
   end
 
   @impl true
+  def any(%T{} = out, %T{} = tensor, opts) do
+    case opts[:axes] do
+      nil ->
+        from_nx(tensor)
+        |> Native.any()
+
+      axes ->
+        from_nx(tensor)
+        |> Native.any_within_dims(axes, opts[:keep_axes])
+    end
+    |> unwrap!()
+    |> to_nx(out)
+  end
+
+  @impl true
   def sum(%T{type: out_type} = out, %T{} = t, opts) do
     axes = opts[:axes] || Nx.axes(t)
     keep_axes = opts[:keep_axes] || false
