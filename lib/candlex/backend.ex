@@ -849,7 +849,6 @@ defmodule Candlex.Backend do
   end
 
   for op <- [
-        :any,
         :argsort,
         :eigh,
         :fft,
