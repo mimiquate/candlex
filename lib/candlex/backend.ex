@@ -118,9 +118,31 @@ defmodule Candlex.Backend do
   # Aggregates
 
   @impl true
-  def all(%T{} = out, %T{} = tensor, _opts) do
-    from_nx(tensor)
-    |> Native.all()
+  def all(%T{} = out, %T{} = tensor, opts) do
+    case opts[:axes] do
+      nil ->
+        from_nx(tensor)
+        |> Native.all()
+
+      axes ->
+        from_nx(tensor)
+        |> Native.all_within_dims(axes, opts[:keep_axes])
+    end
+    |> unwrap!()
+    |> to_nx(out)
+  end
+
+  @impl true
+  def any(%T{} = out, %T{} = tensor, opts) do
+    case opts[:axes] do
+      nil ->
+        from_nx(tensor)
+        |> Native.any()
+
+      axes ->
+        from_nx(tensor)
+        |> Native.any_within_dims(axes, opts[:keep_axes])
+    end
     |> unwrap!()
     |> to_nx(out)
   end
@@ -509,6 +531,25 @@ defmodule Candlex.Backend do
   def dot(
         %T{type: _out_type} = out,
         %T{shape: left_shape, type: _left_type} = left,
+        [left_axis] = _left_axes,
+        [] = _left_batched_axes,
+        %T{shape: right_shape, type: _right_type} = right,
+        [0] = _right_axes,
+        [] = _right_batched_axes
+      )
+      when tuple_size(left_shape) >= 1 and tuple_size(right_shape) == 1 and
+             left_axis == tuple_size(left_shape) - 1 do
+    {left, right} = maybe_upcast(left, right)
+
+    from_nx(left)
+    |> Native.dot(from_nx(right))
+    |> unwrap!()
+    |> to_nx(out)
+  end
+
+  def dot(
+        %T{type: _out_type} = out,
+        %T{shape: left_shape, type: _left_type} = left,
         [1] = _left_axes,
         [] = _left_batched_axes,
         %T{shape: right_shape, type: _right_type} = right,
@@ -516,6 +557,8 @@ defmodule Candlex.Backend do
         [] = _right_batched_axes
       )
       when tuple_size(left_shape) == 2 and tuple_size(right_shape) == 2 do
+    {left, right} = maybe_upcast(left, right)
+
     Native.matmul(
       from_nx(left),
       from_nx(right)
@@ -827,7 +870,6 @@ defmodule Candlex.Backend do
   end
 
   for op <- [
-        :any,
         :argsort,
         :eigh,
         :fft,

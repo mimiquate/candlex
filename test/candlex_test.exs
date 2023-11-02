@@ -511,14 +511,13 @@ defmodule CandlexTest do
 
       # Dot product of vectors
 
-      # TODO:
-      # t([1, 2, 3])
-      # |> Nx.dot(t([4, 5, 6]))
-      # |> assert_equal(t(32))
+      t([1, 2, 3])
+      |> Nx.dot(t([4, 5, 6]))
+      |> assert_equal(t(32))
 
-      # t([1.0, 2.0, 3.0])
-      # |> Nx.dot(t([1, 2, 3]))
-      # |> assert_equal(t(14.0))
+      t([1.0, 2, 3])
+      |> Nx.dot(t([1, 2, 3]))
+      |> assert_equal(t(14.0))
 
       # Dot product of matrices (2-D tensors)
 
@@ -533,7 +532,7 @@ defmodule CandlexTest do
       # ))
 
       t([[1.0, 2, 3], [4, 5, 6]])
-      |> Nx.dot(t([[7.0, 8], [9, 10], [11, 12]]))
+      |> Nx.dot(t([[7, 8], [9, 10], [11, 12]]))
       |> assert_equal(
         t([
           [58.0, 64],
@@ -543,14 +542,18 @@ defmodule CandlexTest do
 
       # Dot product of vector and n-D tensor
 
-      # t([[[1.0, 2], [3, 4]], [[5, 6], [7, 8]]], names: [:i, :j, :k])
-      # |> Nx.dot(t([5.0, 10], names: [:x]))
-      # |> assert_equal(t(
-      #   [
-      #     [25, 55],
-      #     [85, 115]
-      #   ]
-      # ))
+      t([[0.0]])
+      |> Nx.dot(t([55.0]))
+      |> assert_equal(t([0.0]))
+
+      t([[[1.0, 2], [3, 4]], [[5, 6], [7, 8]]])
+      |> Nx.dot(t([5, 10]))
+      |> assert_equal(
+        t([
+          [25.0, 55],
+          [85, 115]
+        ])
+      )
 
       # t([5.0, 10], names: [:x])
       # |> Nx.dot(t([[1.0, 2, 3], [4, 5, 6]], names: [:i, :j]))
@@ -2141,6 +2144,109 @@ defmodule CandlexTest do
           [0, 1, 1]
         ])
       )
+    end
+
+    test "all" do
+      t(0)
+      |> Nx.all()
+      |> assert_equal(t(0))
+
+      t(10)
+      |> Nx.all()
+      |> assert_equal(t(1))
+
+      t([0, 1, 2])
+      |> Nx.all()
+      |> assert_equal(t(0))
+
+      t([[-1, 0, 1], [2, 3, 4]], names: [:x, :y])
+      |> Nx.all(axes: [:x])
+      |> assert_equal(t([1, 0, 1]))
+
+      t([[-1, 0, 1], [2, 3, 4]], names: [:x, :y])
+      |> Nx.all(axes: [:y])
+      |> assert_equal(t([0, 1]))
+
+      t([[-1, 0, 1], [2, 3, 4]], names: [:x, :y])
+      |> Nx.all(axes: [:y], keep_axes: true)
+      |> assert_equal(
+        t([
+          [0],
+          [1]
+        ])
+      )
+
+      tensor = Nx.tensor([[[1, 2], [0, 4]], [[5, 6], [7, 8]]], names: [:x, :y, :z])
+
+      tensor
+      |> Nx.all(axes: [:x, :y])
+      |> assert_equal(t([0, 1]))
+
+      tensor
+      |> Nx.all(axes: [:y, :z])
+      |> assert_equal(t([0, 1]))
+
+      tensor
+      |> Nx.all(axes: [:x, :z])
+      |> assert_equal(t([1, 0]))
+
+      tensor
+      |> Nx.all(axes: [:x, :y], keep_axes: true)
+      |> assert_equal(
+        t([
+          [
+            [0, 1]
+          ]
+        ])
+      )
+
+      tensor
+      |> Nx.all(axes: [:y, :z], keep_axes: true)
+      |> assert_equal(
+        t([
+          [
+            [0]
+          ],
+          [
+            [1]
+          ]
+        ])
+      )
+
+      tensor
+      |> Nx.all(axes: [:x, :z], keep_axes: true)
+      |> assert_equal(
+        t([
+          [
+            [1],
+            [0]
+          ]
+        ])
+      )
+    end
+
+    test "any" do
+      t([0, 1, 2])
+      |> Nx.any()
+      |> assert_equal(t(1))
+
+      t([[0, 1, 0], [0, 1, 2]], names: [:x, :y])
+      |> Nx.any(axes: [:x])
+      |> assert_equal(t([0, 1, 1]))
+
+      t([[0, 1, 0], [0, 1, 2]], names: [:x, :y])
+      |> Nx.any(axes: [:y])
+      |> assert_equal(t([1, 1]))
+
+      tensor = t([[0, 1, 0], [0, 1, 2]], names: [:x, :y])
+
+      tensor
+      |> Nx.any(axes: [:x], keep_axes: true)
+      |> assert_equal(t([[0, 1, 1]]))
+
+      tensor
+      |> Nx.any(axes: [:y], keep_axes: true)
+      |> assert_equal(t([[1], [1]]))
     end
 
     if Candlex.Backend.cuda_available?() do
