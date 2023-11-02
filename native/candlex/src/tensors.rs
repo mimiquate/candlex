@@ -194,6 +194,24 @@ pub fn all_within_dims(
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
+pub fn any(ex_tensor: ExTensor) -> Result<ExTensor, CandlexError> {
+    Ok(ExTensor::new(_any(
+        &ex_tensor.flatten_all()?,
+        vec![0],
+        false,
+    )?))
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
+pub fn any_within_dims(
+    ex_tensor: ExTensor,
+    dims: Vec<usize>,
+    keep_dims: bool,
+) -> Result<ExTensor, CandlexError> {
+    Ok(ExTensor::new(_any(ex_tensor.deref(), dims, keep_dims)?))
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
 pub fn argmax(ex_tensor: ExTensor, dim: usize, keep_dim: bool) -> Result<ExTensor, CandlexError> {
     let t = if keep_dim {
         ex_tensor.argmax_keepdim(dim)?
@@ -466,6 +484,22 @@ custom_binary_nif!(logical_xor, LogicalXor);
 custom_binary_nif!(pow, Pow);
 custom_binary_nif!(right_shift, Shr);
 custom_binary_nif!(remainder, Remainder);
+
+fn _any(tensor: &Tensor, dims: Vec<usize>, keep_dims: bool) -> Result<Tensor, CandlexError> {
+    let comparison = tensor.ne(&tensor.zeros_like()?)?;
+
+    let result = if keep_dims {
+        dims.iter()
+            .rev()
+            .fold(comparison, |t, dim| t.max_keepdim(*dim).unwrap())
+    } else {
+        dims.iter()
+            .rev()
+            .fold(comparison, |t, dim| t.max(*dim).unwrap())
+    };
+
+    Ok(result)
+}
 
 fn tuple_to_vec(term: Term) -> Result<Vec<usize>, rustler::Error> {
     rustler::types::tuple::get_tuple(term)?
