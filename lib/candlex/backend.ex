@@ -118,9 +118,31 @@ defmodule Candlex.Backend do
   # Aggregates
 
   @impl true
-  def all(%T{} = out, %T{} = tensor, _opts) do
-    from_nx(tensor)
-    |> Native.all()
+  def all(%T{} = out, %T{} = tensor, opts) do
+    case opts[:axes] do
+      nil ->
+        from_nx(tensor)
+        |> Native.all()
+
+      axes ->
+        from_nx(tensor)
+        |> Native.all_within_dims(axes, opts[:keep_axes])
+    end
+    |> unwrap!()
+    |> to_nx(out)
+  end
+
+  @impl true
+  def any(%T{} = out, %T{} = tensor, opts) do
+    case opts[:axes] do
+      nil ->
+        from_nx(tensor)
+        |> Native.any()
+
+      axes ->
+        from_nx(tensor)
+        |> Native.any_within_dims(axes, opts[:keep_axes])
+    end
     |> unwrap!()
     |> to_nx(out)
   end
@@ -844,7 +866,6 @@ defmodule Candlex.Backend do
   end
 
   for op <- [
-        :any,
         :argsort,
         :eigh,
         :fft,
