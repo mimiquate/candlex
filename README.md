@@ -48,7 +48,7 @@ if no precompiled binary is available for your target environment. Once set, you
 must run `mix deps.clean candlex --build` explicitly to force to recompile.
 Building has a number of dependencies, see *Building from source* below.
 
-#### `NATIVE_TARGET`
+#### `CANDLEX_NIF_TARGET`
 
 The default value is `cpu`, which implies the final the binary supports targeting
 only the host CPU.
@@ -74,7 +74,7 @@ You will need the following installed in your system for the compilation:
 ### GPU support
 
 To build native binary with GPU support, you need to run in an environment that has CUDA installed,
-then you can build with either `NATIVE_TARGET=cuda`. See the `NATIVE_TARGET` for more details.
+then you can build with `CANDLEX_NIF_TARGET=cuda`. See the `CANDLEX_NIF_TARGET` for more details.
 
 ## Releasing
 
