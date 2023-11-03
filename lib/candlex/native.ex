@@ -10,7 +10,7 @@ defmodule Candlex.Native do
     otp_app: :candlex,
     features: Application.compile_env(:candlex, :crate_features, []),
     base_url: "#{source_url}/releases/download/v#{version}",
-    force_build: System.get_env("NATIVE_BUILD") in ["1", "true"],
+    force_build: System.get_env("CANDLEX_NIF_BUILD") in ["1", "true"],
     mode: mode,
     version: version,
     nif_versions: ["2.16"],
