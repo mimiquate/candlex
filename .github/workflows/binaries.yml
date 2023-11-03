@@ -73,8 +73,6 @@ jobs:
 
     container:
       image: nvidia/cuda:12.2.2-devel-ubuntu22.04
-      env:
-        CUDA_COMPUTE_CAP: "70"
 
     steps:
       - run: apt update && apt install -y curl git
