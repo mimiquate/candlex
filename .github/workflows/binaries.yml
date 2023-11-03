@@ -84,6 +84,8 @@ jobs:
 
       - uses: mimiquate/rustler-precompiled-action@fix-build-sh-with-container
         id: precompile
+        env:
+          CUDA_COMPUTE_CAP: "70"
         with:
           project-dir: ${{ env.PROJECT_DIR }}
           project-name: ${{ env.PROJECT_NAME }}
