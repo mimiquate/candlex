@@ -82,7 +82,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - run: rustup target add ${{ matrix.target }}
 
-      - uses: mimiquate/rustler-precompiled-action@fix-build-sh-with-container
+      - uses: philss/rustler-precompiled-action@main
         id: precompile
         env:
           CUDA_COMPUTE_CAP: "70"
