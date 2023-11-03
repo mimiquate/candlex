@@ -41,7 +41,7 @@ Nx.default_backend(Candlex.Backend)
 
 More details in [Nx backends](https://hexdocs.pm/nx/Nx.html#module-backends)
 
-#### `NATIVE_BUILD`
+#### `CANDLEX_NIF_BUILD`
 
 Defaults to `false`. If `true` the native binary is built locally, which may be useful
 if no precompiled binary is available for your target environment. Once set, you
@@ -63,7 +63,7 @@ GPU drivers.
 
 ## Building from source
 
-To build the native binary locally you need to set `NATIVE_BUILD=true`.
+To build the native binary locally you need to set `CANDLEX_NIF_BUILD=true`.
 Keep in mind that the compilation usually takes time.
 
 You will need the following installed in your system for the compilation:

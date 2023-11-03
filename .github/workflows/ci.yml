@@ -7,7 +7,7 @@ jobs:
   main:
     runs-on: ubuntu-latest
     env:
-      NATIVE_BUILD: true
+      CANDLEX_NIF_BUILD: true
     strategy:
       fail-fast: false
       matrix:
