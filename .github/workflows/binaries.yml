@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: rustup target add ${{ matrix.target }}
 
-      - uses: mimiquate/rustler-precompiled-action@fix-build-sh-with-container
+      - uses: philss/rustler-precompiled-action@main
         id: precompile
         with:
           project-dir: ${{ env.PROJECT_DIR }}
