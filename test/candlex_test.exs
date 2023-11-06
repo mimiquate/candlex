@@ -1192,6 +1192,16 @@ defmodule CandlexTest do
       )
     end
 
+    test "logical_not" do
+      t([-1, 0, 1])
+      |> Nx.logical_not()
+      |> assert_equal(t([0, 1, 0]))
+
+      t([-1.0, 0.0, 1.0])
+      |> Nx.logical_not()
+      |> assert_equal(t([0, 1, 0]))
+    end
+
     test "erf" do
       Nx.erf(1.0)
       |> assert_close(t(0.8427007794380188))
