@@ -32,8 +32,8 @@ defmodule Candlex.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:nx, "~> 0.6"},
-      # {:nx, git: "https://github.com/elixir-nx/nx", sparse: "nx"},
+      # {:nx, "~> 0.6"},
+      {:nx, git: "https://github.com/elixir-nx/nx", sparse: "nx"},
       {:rustler_precompiled, "~> 0.7.0"},
 
       # Optional
