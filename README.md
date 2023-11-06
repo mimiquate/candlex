@@ -48,6 +48,19 @@ if no precompiled binary is available for your target environment. Once set, you
 must run `mix deps.clean candlex --build` explicitly to force to recompile.
 Building has a number of dependencies, see *Building from source* below.
 
+#### `CANDLEX_NIF_TARGET`
+
+The default value is `cpu`, which implies the final the binary supports targeting
+only the host CPU.
+
+| Value | Target environment |
+| --- | --- |
+| cpu | |
+| cuda | CUDA 12.x |
+
+To use Candlex with NVidia GPU you need [CUDA](https://developer.nvidia.com/cuda-downloads) compatible with your
+GPU drivers.
+
 ## Building from source
 
 To build the native binary locally you need to set `CANDLEX_NIF_BUILD=true`.
@@ -58,11 +71,16 @@ You will need the following installed in your system for the compilation:
   * [Git](https://git-scm.com) for fetching candle-core source
   * [Rust](https://www.rust-lang.org) with cargo to compile rustler NIFs
 
+### GPU support
+
+To build native binary with GPU support, you need to run in an environment that has CUDA installed,
+then you can build with `CANDLEX_NIF_TARGET=cuda`. See the `CANDLEX_NIF_TARGET` for more details.
+
 ## Releasing
 
 To publish a new version of this package:
 
-1. Update `@version` in `mix.exs` and `project-version` in `.github/workflows/binaries.yml`.
+1. Update `@version` in `mix.exs` and `PROJECT_VERSION` in `.github/workflows/binaries.yml`.
 1. `git tag -s <tag-version>` to create new signed tag.
 1. `git push origin <tag-version>` to push the tag.
 1. Wait for the `binaries.yml` GitHub workflow to build all the NIF binaries.

@@ -8,7 +8,7 @@ defmodule Candlex.Native do
 
   use RustlerPrecompiled,
     otp_app: :candlex,
-    features: Application.compile_env(:candlex, :crate_features, []),
+    features: if(Application.compile_env(:candlex, :use_cuda), do: [:cuda], else: []),
     base_url: "#{source_url}/releases/download/v#{version}",
     force_build: System.get_env("CANDLEX_NIF_BUILD") in ["1", "true"],
     mode: mode,
@@ -19,7 +19,10 @@ defmodule Candlex.Native do
       "aarch64-unknown-linux-gnu",
       "x86_64-apple-darwin",
       "x86_64-unknown-linux-gnu"
-    ]
+    ],
+    variants: %{
+      "x86_64-unknown-linux-gnu" => [cuda: fn -> Application.compile_env(:candlex, :use_cuda) end]
+    }
 
   # Rustler will override all the below stub functions with real NIFs
   def from_binary(_binary, _dtype, _shape, _device), do: error()
