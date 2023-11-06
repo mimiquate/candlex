@@ -85,11 +85,11 @@ To publish a new version of this package:
 1. `git push origin <tag-version>` to push the tag.
 1. Wait for the `binaries.yml` GitHub workflow to build all the NIF binaries.
 1. `mix rustler_precompiled.download Candlex.Native --all --print` to generate binaries checksums locally.
-1. `rm -r native/candlex/target` to leave out rust crate build artifacts from published elixir package.
+1. `rm -r native/candlex/target priv/native` to leave out rust crate build artifacts from published elixir package.
 1. `mix hex.build --unpack` to check the package includes the correct files.
 1. Publish the release from draft in GitHub.
 1. `mix hex.publish` to publish package to Hex.pm.
-1. git push origin main
+1. `git push origin main`
 
 ## License
 
