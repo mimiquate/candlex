@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2023-11-06
+
+### Added
+
+- Precompiled binary for CUDA 12.x target.
+
 ## [0.1.2] - 2023-10-30
 
 ### Added

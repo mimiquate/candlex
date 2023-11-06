@@ -14,7 +14,7 @@ by adding `candlex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:candlex, "~> 0.1.2"}
+    {:candlex, "~> 0.1.3"}
   ]
 end
 ```
@@ -89,6 +89,7 @@ To publish a new version of this package:
 1. `mix hex.build --unpack` to check the package includes the correct files.
 1. Publish the release from draft in GitHub.
 1. `mix hex.publish` to publish package to Hex.pm.
+1. git push origin main
 
 ## License
 
