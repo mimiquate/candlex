@@ -858,7 +858,7 @@ defmodule Candlex.Backend do
   # LinAlg
 
   @impl true
-  def qr({out_q, out_r}, %T{shape: {n, n}} = tensor, opts) do
+  def qr({out_q, out_r}, %T{shape: {n, n}} = tensor, _opts) do
     {native_q, native_r} =
       tensor
       |> from_nx()
