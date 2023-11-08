@@ -855,6 +855,19 @@ defmodule Candlex.Backend do
     |> Stream.map(&to_nx(&1, out))
   end
 
+  # LinAlg
+
+  @impl true
+  def qr({out_q, out_r}, %T{shape: {n, n}} = tensor, opts) do
+    {native_q, native_r} =
+      tensor
+      |> from_nx()
+      |> Native.qr()
+      |> unwrap!()
+
+    {to_nx(native_q, out_q), to_nx(native_r, out_r)}
+  end
+
   for op <- [
         :cholesky,
         :conjugate,
@@ -876,7 +889,6 @@ defmodule Candlex.Backend do
         :ifft,
         :lu,
         :product,
-        :qr,
         :reverse,
         :sort
       ] do

@@ -112,6 +112,7 @@ rustler::init! {
         tensors::logical_xor,
         tensors::left_shift,
         tensors::right_shift,
+        tensors::qr,
         tensors::to_device,
         devices::is_cuda_available
     ],
