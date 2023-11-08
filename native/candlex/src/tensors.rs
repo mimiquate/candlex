@@ -275,25 +275,24 @@ pub fn qr(tensor: ExTensor) -> Result<(ExTensor, ExTensor), CandlexError> {
     let side = tensor.dims()[0];
     let device = tensor.device();
 
-    let qr =
-        nalgebra::linalg::QR::new(
-            nalgebra::DMatrix::from_vec(
-                side,
-                side,
-                tensor.t()?.flatten_all()?.to_vec1::<f32>()?
-            )
-        );
+    let qr = nalgebra::linalg::QR::new(nalgebra::DMatrix::from_vec(
+        side,
+        side,
+        tensor.t()?.flatten_all()?.to_vec1::<f32>()?,
+    ));
 
-    Ok(
-        (
-            ExTensor::new(
-                Tensor::new(qr.q().as_slice(), &device)?.reshape((side, side))?.t()?
-            ),
-            ExTensor::new(
-                Tensor::new(qr.r().as_slice(), &device)?.reshape((side, side))?.t()?
-            )
-        )
-    )
+    Ok((
+        ExTensor::new(
+            Tensor::new(qr.q().as_slice(), &device)?
+                .reshape((side, side))?
+                .t()?,
+        ),
+        ExTensor::new(
+            Tensor::new(qr.r().as_slice(), &device)?
+                .reshape((side, side))?
+                .t()?,
+        ),
+    ))
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
