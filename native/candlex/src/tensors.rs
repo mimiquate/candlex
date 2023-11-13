@@ -139,10 +139,10 @@ pub fn reverse(t: ExTensor, dims: Vec<usize>) -> Result<ExTensor, CandlexError> 
     let t_dims = t.dims();
     let mut new_t = t.clone();
 
-    for i in dims {
+    for dim in dims {
         new_t = new_t.index_select(
-            &Tensor::arange_step::<i64>((t_dims[i] as i64) - 1, -1, -1, device)?,
-            i,
+            &Tensor::arange_step::<i64>((t_dims[dim] as i64) - 1, -1, -1, device)?,
+            dim,
         )?;
     }
 
