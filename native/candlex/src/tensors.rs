@@ -272,6 +272,40 @@ pub fn reshape(t: ExTensor, shape: Term) -> Result<ExTensor, CandlexError> {
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
+pub fn qr(tensor: ExTensor) -> Result<(ExTensor, ExTensor), CandlexError> {
+    use faer::Faer;
+
+    let side = tensor.dims()[0];
+    let device = tensor.device();
+
+    let vec = tensor.to_vec2::<f32>()?;
+    let mat = faer::Mat::from_fn(side, side, |row, col| vec[row][col]);
+
+    let qr = mat.qr();
+    let q = qr.compute_q();
+    let r = qr.compute_r();
+
+    let mut q_res = vec![];
+    let mut r_res = vec![];
+
+    let transposed_q = q.transpose().to_owned();
+    let transposed_r = r.transpose().to_owned();
+
+    for i in 0..q.ncols() {
+        q_res.extend_from_slice(transposed_q.col_ref(i));
+    }
+
+    for i in 0..r.ncols() {
+        r_res.extend_from_slice(transposed_r.col_ref(i));
+    }
+
+    Ok((
+        ExTensor::new(Tensor::new(q_res, &device)?.reshape((side, side))?),
+        ExTensor::new(Tensor::new(r_res, &device)?.reshape((side, side))?),
+    ))
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
 pub fn slice_scatter(
     t: ExTensor,
     src: ExTensor,
