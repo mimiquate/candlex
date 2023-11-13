@@ -386,7 +386,7 @@ defmodule Candlex.Backend do
     |> to_nx(out)
   end
 
-  def gather(%T{} = _out, %T{} = _tensor, %T{} = _indices) do
+  def gather(%T{} = _out, %T{} = _tensor, %T{} = _indices, _opts) do
     raise("unsupported gather for tensor of rank greater than 1")
   end
 
