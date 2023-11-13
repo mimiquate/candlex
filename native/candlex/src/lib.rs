@@ -1,7 +1,8 @@
 mod atoms {
     rustler::atoms! {
         cpu,
-        cuda
+        cuda,
+        metal
     }
 }
 
