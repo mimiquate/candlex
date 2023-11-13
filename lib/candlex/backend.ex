@@ -378,7 +378,7 @@ defmodule Candlex.Backend do
   # Indexed
 
   @impl true
-  def gather(%T{} = out, %T{shape: {_}} = tensor, %T{} = indices) do
+  def gather(%T{} = out, %T{shape: {_}} = tensor, %T{} = indices, _opts) do
     tensor
     |> from_nx()
     |> Native.gather(from_nx(Nx.flatten(indices)), 0)
@@ -391,7 +391,7 @@ defmodule Candlex.Backend do
   end
 
   @impl true
-  def indexed_add(%T{} = out, %T{shape: {_}} = tensor, %T{} = indices, %T{} = updates) do
+  def indexed_add(%T{} = out, %T{shape: {_}} = tensor, %T{} = indices, %T{} = updates, _opts) do
     {tensor, updates} = maybe_upcast(tensor, updates)
 
     tensor
@@ -887,7 +887,6 @@ defmodule Candlex.Backend do
   end
 
   for op <- [
-        :indexed_put,
         :map,
         :triangular_solve,
         :window_max,
@@ -901,9 +900,14 @@ defmodule Candlex.Backend do
     end
   end
 
-  @impl true
-  def reduce(_out, _tensor, _, _, _) do
-    raise "unsupported Candlex.Backend.reduce function"
+  for op <- [
+        :indexed_put,
+        :reduce
+      ] do
+    @impl true
+    def unquote(op)(_out, _tensor, _, _, _) do
+      raise "unsupported Candlex.Backend.#{unquote(op)} function"
+    end
   end
 
   for op <- [
