@@ -26,6 +26,7 @@ impl ExTensor {
         let dev_string = match tensor.device() {
             Device::Cpu => atoms::cpu(),
             Device::Cuda(_) => atoms::cuda(),
+            Device::Metal(_) => atoms::metal(),
         };
 
         Self {
