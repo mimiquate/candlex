@@ -141,8 +141,7 @@ pub fn reverse(t: ExTensor, dims: Vec<usize>) -> Result<ExTensor, CandlexError> 
 
     for i in dims {
         new_t = new_t.index_select(
-            &Tensor::arange_step::<i64>(t_dims[i] as i64, 0, -1, device)?
-                .broadcast_sub(&Tensor::new(1i64, device)?)?,
+            &Tensor::arange_step::<i64>((t_dims[i] as i64) - 1, -1, -1, device)?,
             i,
         )?;
     }
