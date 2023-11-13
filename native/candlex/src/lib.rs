@@ -62,6 +62,7 @@ rustler::init! {
         tensors::chunk,
         tensors::squeeze,
         tensors::clamp,
+        tensors::reverse,
         tensors::arange,
         tensors::to_type,
         tensors::broadcast_to,

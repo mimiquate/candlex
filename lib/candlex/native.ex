@@ -50,6 +50,7 @@ defmodule Candlex.Native do
   def slice_scatter(_tensor, _src, _dim, _start), do: error()
   def pad_with_zeros(_tensor, _left, _right), do: error()
   def clamp(_tensor, _min, _max), do: error()
+  def reverse(_tensor, _axes), do: error()
 
   for op <- [
         :abs,

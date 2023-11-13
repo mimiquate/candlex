@@ -134,6 +134,23 @@ pub fn clamp(t: ExTensor, min_val: ExTensor, max_val: ExTensor) -> Result<ExTens
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
+pub fn reverse(t: ExTensor, dims: Vec<usize>) -> Result<ExTensor, CandlexError> {
+    let device = t.device();
+    let t_dims = t.dims();
+    let mut new_t = t.clone();
+
+    for i in dims {
+        new_t = new_t.index_select(
+            &Tensor::arange_step::<i64>(t_dims[i] as i64, 0, -1, device)?
+                .broadcast_sub(&Tensor::new(1i64, device)?)?,
+            i,
+        )?;
+    }
+
+    Ok(ExTensor::new(new_t))
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
 pub fn rsqrt(t: ExTensor) -> Result<ExTensor, CandlexError> {
     Ok(ExTensor::new(t.sqrt()?.recip()?))
 }
