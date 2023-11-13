@@ -1871,6 +1871,10 @@ defmodule CandlexTest do
           ]
         ])
       )
+
+      # t([[[1, 2], [3, 4]]])
+      # |> Nx.put_slice([0, 0, 0], t([[[10, 11]]]))
+      # |> assert_equal(t([[[10, 11], [3, 4]]]))
     end
 
     test "pad" do

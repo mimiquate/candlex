@@ -406,8 +406,22 @@ defmodule Candlex.Backend do
   end
 
   @impl true
-  def put_slice(%T{} = out, %T{} = t, [_ | _] = start_indices, slice) do
+  def put_slice(
+        %T{} = out,
+        %T{shape: shape} = t,
+        [_ | _] = start_indices,
+        %T{shape: slice_shape} = slice
+      ) do
+    [_last_dim | leading_dimensions] = shape |> Tuple.to_list() |> Enum.reverse()
+
+    [_last_slice_dim | leading_slice_dimensions] =
+      slice_shape |> Tuple.to_list() |> Enum.reverse()
+
     [last_start_index | leading_start_indices] = Enum.reverse(start_indices)
+
+    if leading_dimensions != leading_slice_dimensions do
+      raise "Unsupported put_slice shapes, tensor=#{inspect(shape)} and slice=#{inspect(slice_shape)}. All-but-last dimensions in slice need to be equal to corresponding dimension in tensor."
+    end
 
     if Enum.all?(leading_start_indices, fn i -> Nx.equal(i, 0) end) do
       t
