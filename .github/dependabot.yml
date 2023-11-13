@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "cargo"
     directory: "/native/candlex"
     schedule:
-      interval: "weekly"
+      interval: "daily"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -11,4 +11,4 @@ updates:
   - package-ecosystem: "mix"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
