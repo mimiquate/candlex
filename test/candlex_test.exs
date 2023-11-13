@@ -2291,6 +2291,58 @@ defmodule CandlexTest do
       |> assert_equal(t([[1], [1]]))
     end
 
+    test "reverse" do
+      t([1, 2, 3])
+      |> Nx.reverse()
+      |> assert_equal(t([3, 2, 1]))
+
+      t([[1, 2, 3], [4, 5, 6]])
+      |> Nx.reverse()
+      |> assert_equal(
+        t([
+          [6, 5, 4],
+          [3, 2, 1]
+        ])
+      )
+
+      t([1, 2, 3], names: [:x])
+      |> Nx.reverse(axes: [:x])
+      |> assert_equal(t([3, 2, 1]))
+
+      t([[1, 2, 3], [4, 5, 6]], names: [:x, :y])
+      |> Nx.reverse(axes: [:x])
+      |> assert_equal(
+        t([
+          [4, 5, 6],
+          [1, 2, 3]
+        ])
+      )
+
+      t([[1, 2, 3], [4, 5, 6]], names: [:x, :y])
+      |> Nx.reverse(axes: [:y])
+      |> assert_equal(
+        t([
+          [3, 2, 1],
+          [6, 5, 4]
+        ])
+      )
+
+      Nx.iota({2, 2, 2}, type: :f32, names: [:x, :y, :z])
+      |> Nx.reverse(axes: [:x, :z])
+      |> assert_equal(
+        t([
+          [
+            [5.0, 4.0],
+            [7.0, 6.0]
+          ],
+          [
+            [1.0, 0.0],
+            [3.0, 2.0]
+          ]
+        ])
+      )
+    end
+
     if Candlex.Backend.cuda_available?() do
       test "different devices" do
         t([1, 2, 3], backend: {Candlex.Backend, device: :cpu})

@@ -609,6 +609,15 @@ defmodule Candlex.Backend do
     )
   end
 
+  @impl true
+  def reverse(%T{} = out, %T{} = tensor, axes) do
+    tensor
+    |> from_nx()
+    |> Native.reverse(axes)
+    |> unwrap!()
+    |> to_nx(out)
+  end
+
   # Shape
 
   @impl true
@@ -877,7 +886,6 @@ defmodule Candlex.Backend do
         :lu,
         :product,
         :qr,
-        :reverse,
         :sort
       ] do
     @impl true
