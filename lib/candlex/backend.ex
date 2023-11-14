@@ -910,8 +910,10 @@ defmodule Candlex.Backend do
 
   for op <- [
         :map,
-        :random_normal, # TODO: Remove after nx 0.7 is released
-        :random_uniform, # TODO: Remove after nx 0.7 is released
+        # TODO: Remove after nx 0.7 is released
+        :random_normal,
+        # TODO: Remove after nx 0.7 is released
+        :random_uniform,
         :triangular_solve,
         :window_max,
         :window_min,
