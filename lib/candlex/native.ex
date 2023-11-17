@@ -4,7 +4,8 @@ defmodule Candlex.Native do
   mix_config = Mix.Project.config()
   version = mix_config[:version]
   source_url = mix_config[:package][:links]["GitHub"]
-  # Test with release mode temporarily
+  # We can't run on :debug mode until we find a workaround to
+  # ignore integer overflows when running Nx.Random Threefry PRNG.
   # mode = if Mix.env() in [:dev, :test], do: :debug, else: :release
   mode = :release
 
