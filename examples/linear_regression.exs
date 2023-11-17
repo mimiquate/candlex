@@ -16,27 +16,6 @@ defmodule LinearRegression do
     {m, b}
   end
 
-  defn predict({m, b}, input) do
-    Nx.dot(input, m) + b
-  end
-
-  defn mse_loss(params, input, target) do
-    target - predict(params, input)
-    |> Nx.pow(2)
-    |> Nx.mean()
-  end
-
-  defn update({m, b} = params, input, target) do
-    {grad_m, grad_b} =
-      params
-      |> grad(&mse_loss(&1, input, target))
-
-    {
-      m - grad_m * @step,
-      b - grad_b * @step
-    }
-  end
-
   def train(params, linear_fn) do
     data =
       Stream.repeatedly(fn -> for _ <- 1..32, do: :rand.uniform() * 10 end)
@@ -59,6 +38,27 @@ defmodule LinearRegression do
           end
         )
     end
+  end
+
+  defn predict({m, b}, input) do
+    Nx.dot(input, m) + b
+  end
+
+  defn mse_loss(params, input, target) do
+    target - predict(params, input)
+    |> Nx.pow(2)
+    |> Nx.mean()
+  end
+
+  defn update({m, b} = params, input, target) do
+    {grad_m, grad_b} =
+      params
+      |> grad(&mse_loss(&1, input, target))
+
+    {
+      m - grad_m * @step,
+      b - grad_b * @step
+    }
   end
 end
 
