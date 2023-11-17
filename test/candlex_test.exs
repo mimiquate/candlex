@@ -1824,6 +1824,18 @@ defmodule CandlexTest do
       #     [5, 6]
       #   ]
       # ))
+
+      t([0, 1])
+      |> Nx.slice([t(0)], [1])
+      |> assert_equal(t([0]))
+
+      t([0, 1])
+      |> Nx.slice([t(1)], [1])
+      |> assert_equal(t([1]))
+
+      t([[1, 2, 3], [4, 5, 6]])
+      |> Nx.slice([t(0), t(1)], [1, 1])
+      |> assert_equal(t([[2]]))
     end
 
     test "squeeze" do
