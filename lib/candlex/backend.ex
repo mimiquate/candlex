@@ -528,10 +528,56 @@ defmodule Candlex.Backend do
       |> Native.to_type(to_candle_dtype(out_type))
       |> unwrap!()
 
+    # IO.inspect(kernel.shape)
+    # IO.inspect(tensor)
+    # IO.inspect(opts[:padding])
+    # IO.inspect(opts[:strides])
+
+    padding =
+      case opts[:padding] do
+        [{0, 0}] ->
+          0
+
+        [{pad, pad}] ->
+          pad
+
+        [{padl, padr}] ->
+          raise("only equal left and right pad supported, left pad: #{padl}, right pad: #{padr}")
+
+        [{0, 0}, {0, 0}] ->
+          0
+
+        [{pad, pad}, {pad, pad}] ->
+          pad
+
+        [{padl, padr}, {_padl, _padr}] ->
+          raise("wrong kernel size , even #{padr}, #{padl}")
+
+        _ ->
+          raise("unsupported shape")
+      end
+
+    stride =
+      case opts[:strides] do
+        [strid] ->
+          strid
+
+        [strid, strid] ->
+          strid
+
+        [stridr, stridb] ->
+          raise("only square strides are allowed, right: #{stridb}, down: #{stridr}")
+
+        _ ->
+          raise("unsupported shape")
+      end
+
+    conv_opts = %Candlex.Native.ConvOpts{padding: padding, stride: stride, dilation: 1, groups: 1}
+
     native_result =
       case Nx.rank(shape) do
-        3 -> Native.conv1d(native_tensor, native_kernel)
-        4 -> Native.conv2d(native_tensor, native_kernel)
+        3 -> Native.conv1d(native_tensor, native_kernel, conv_opts)
+        4 -> Native.conv2d(native_tensor, native_kernel, conv_opts)
         rank -> raise("unsupported conv for tensor of rank #{rank}, only 3 or 4 supported")
       end
 
@@ -910,8 +956,10 @@ defmodule Candlex.Backend do
 
   for op <- [
         :map,
-        :random_normal, # TODO: Remove after nx 0.7 is released
-        :random_uniform, # TODO: Remove after nx 0.7 is released
+        # TODO: Remove after nx 0.7 is released
+        :random_normal,
+        # TODO: Remove after nx 0.7 is released
+        :random_uniform,
         :triangular_solve,
         :window_max,
         :window_min,

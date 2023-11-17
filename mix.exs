@@ -5,7 +5,30 @@ defmodule Candlex.MixProject do
   @source_url "https://github.com/mimiquate/candlex"
   @version "0.1.4"
 
+  @nerves_rust_target_triple_mapping %{
+    "armv6-nerves-linux-gnueabihf": "arm-unknown-linux-gnueabihf"
+  }
+
   def project do
+    if is_binary(System.get_env("NERVES_SDK_SYSROOT")) do
+      components =
+        System.get_env("CC")
+        |> tap(&System.put_env("RUSTFLAGS", "-C linker=#{&1}"))
+        |> Path.basename()
+        |> String.split("-")
+
+      target_triple =
+        components
+        |> Enum.slice(0, Enum.count(components) - 1)
+        |> Enum.join("-")
+
+      mapping = Map.get(@nerves_rust_target_triple_mapping, String.to_atom(target_triple))
+
+      if is_binary(mapping) do
+        System.put_env("RUSTLER_TARGET", mapping)
+      end
+    end
+
     [
       app: :candlex,
       description: @description,

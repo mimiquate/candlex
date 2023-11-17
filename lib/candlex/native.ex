@@ -1,28 +1,40 @@
+defmodule Candlex.Native.ConvOpts do
+  defstruct [:padding, :stride, :dilation, :groups]
+end
+
 defmodule Candlex.Native do
   @moduledoc false
 
-  mix_config = Mix.Project.config()
-  version = mix_config[:version]
-  source_url = mix_config[:package][:links]["GitHub"]
+  # mix_config = Mix.Project.config()
+  # version = mix_config[:version]
+  #  source_url = mix_config[:package][:links]["GitHub"]
   mode = if Mix.env() in [:dev, :test], do: :debug, else: :release
 
-  use RustlerPrecompiled,
+  # use RustlerPrecompiled,
+  # otp_app: :candlex,
+  # features: if(Application.compile_env(:candlex, :use_cuda), do: [:cuda], else: []),
+  # base_url: "#{source_url}/releases/download/v#{version}",
+  # force_build: System.get_env("CANDLEX_NIF_BUILD") in ["1", "true"],
+  # mode: mode,
+  # version: version,
+  # nif_versions: ["2.16"],
+  # targets: [
+  # "aarch64-apple-darwin",
+  # "aarch64-unknown-linux-gnu",
+  # "x86_64-apple-darwin",
+  # "x86_64-unknown-linux-gnu"
+  # ],
+  # variants: %{
+  # "x86_64-unknown-linux-gnu" => [cuda: fn -> Application.compile_env(:candlex, :use_cuda) end]
+  # }
+
+  use Rustler,
     otp_app: :candlex,
-    features: if(Application.compile_env(:candlex, :use_cuda), do: [:cuda], else: []),
-    base_url: "#{source_url}/releases/download/v#{version}",
-    force_build: System.get_env("CANDLEX_NIF_BUILD") in ["1", "true"],
-    mode: mode,
-    version: version,
-    nif_versions: ["2.16"],
-    targets: [
-      "aarch64-apple-darwin",
-      "aarch64-unknown-linux-gnu",
-      "x86_64-apple-darwin",
-      "x86_64-unknown-linux-gnu"
-    ],
-    variants: %{
-      "x86_64-unknown-linux-gnu" => [cuda: fn -> Application.compile_env(:candlex, :use_cuda) end]
-    }
+    crate: "candlex",
+    target: System.get_env("RUSTLER_TARGET"),
+    mode: mode
+
+  # version: version
 
   # Rustler will override all the below stub functions with real NIFs
   def from_binary(_binary, _dtype, _shape, _device), do: error()
@@ -45,8 +57,8 @@ defmodule Candlex.Native do
   def dtype(_tensor), do: error()
   def t_shape(_tensor), do: error()
   def concatenate(_tensors, _axis), do: error()
-  def conv1d(_tensor, _kernel), do: error()
-  def conv2d(_tensor, _kernel), do: error()
+  def conv1d(_tensor, _kernel, _opts), do: error()
+  def conv2d(_tensor, _kernel, _opts), do: error()
   def slice_scatter(_tensor, _src, _dim, _start), do: error()
   def pad_with_zeros(_tensor, _left, _right), do: error()
   def clamp(_tensor, _min, _max), do: error()
