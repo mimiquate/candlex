@@ -1,7 +1,10 @@
 defmodule LinearRegression do
   import Nx.Defn
 
-  defn init_random_params do
+  @epochs 100
+  @step 0.001 # Sometimes also called learning rate
+
+  defn initial_random_params do
     {m, new_key} =
       Nx.Random.key(42)
       |> Nx.Random.normal(0.0, 0.1, shape: {1, 1})
@@ -17,40 +20,42 @@ defmodule LinearRegression do
     Nx.dot(input, m) + b
   end
 
-  # MSE Loss
-  defn loss({m, b}, input, target) do
-    target - predict({m, b}, input)
+  defn mse_loss(params, input, target) do
+    target - predict(params, input)
     |> Nx.pow(2)
     |> Nx.mean()
   end
 
-  defn update({m, b} = params, input, target, step) do
+  defn update({m, b} = params, input, target) do
     {grad_m, grad_b} =
       params
-      |> grad(&loss(&1, input, target))
+      |> grad(&mse_loss(&1, input, target))
 
     {
-      m - grad_m * step,
-      b - grad_b * step
+      m - grad_m * @step,
+      b - grad_b * @step
     }
   end
 
-  def train(params, epochs, lin_fn) do
+  def train(params, linear_fn) do
     data =
       Stream.repeatedly(fn -> for _ <- 1..32, do: :rand.uniform() * 10 end)
-      |> Stream.map(fn x -> Enum.zip(x, Enum.map(x, lin_fn)) end)
+      |> Stream.map(fn x -> Enum.zip(x, Enum.map(x, linear_fn)) end)
 
-    for _ <- 1..epochs, reduce: params do
+    for _ <- 1..@epochs, reduce: params do
       acc ->
         data
         |> Enum.take(200)
         |> Enum.reduce(
           acc,
-          fn batch, cur_params ->
+          fn batch, current_params ->
             {input, target} = Enum.unzip(batch)
-            x = Nx.reshape(Nx.tensor(input), {32, 1})
-            y = Nx.reshape(Nx.tensor(target), {32, 1})
-            update(cur_params, x, y, 0.001)
+
+            update(
+              current_params,
+              Nx.reshape(Nx.tensor(input), {32, 1}),
+              Nx.reshape(Nx.tensor(target), {32, 1})
+            )
           end
         )
     end
@@ -59,16 +64,15 @@ end
 
 Nx.default_backend(Candlex.Backend)
 
-params = LinearRegression.init_random_params()
+initial_params = LinearRegression.initial_random_params()
 m = :rand.normal(0.0, 10.0)
 b = :rand.normal(0.0, 5.0)
 IO.puts("Target m: #{m} Target b: #{b}\n")
 
-lin_fn = fn x -> m * x + b end
-epochs = 100
+linear_fn = fn x -> m * x + b end
 
 # These will be very close to the above coefficients
-{time, {trained_m, trained_b}} = :timer.tc(LinearRegression, :train, [params, epochs, lin_fn])
+{time, {trained_m, trained_b}} = :timer.tc(LinearRegression, :train, [initial_params, linear_fn])
 
 trained_m =
   trained_m
