@@ -4,14 +4,17 @@ defmodule Candlex.Native do
   mix_config = Mix.Project.config()
   version = mix_config[:version]
   source_url = mix_config[:package][:links]["GitHub"]
+  # We can't run on :debug mode until we find a workaround to
+  # ignore integer overflows when running Nx.Random Threefry PRNG.
   # mode = if Mix.env() in [:dev, :test], do: :debug, else: :release
+  mode = :release
 
   use RustlerPrecompiled,
     otp_app: :candlex,
     features: if(Application.compile_env(:candlex, :use_cuda), do: [:cuda], else: []),
     base_url: "#{source_url}/releases/download/v#{version}",
     force_build: System.get_env("CANDLEX_NIF_BUILD") in ["1", "true"],
-    # mode: mode,
+    mode: mode,
     version: version,
     nif_versions: ["2.16"],
     targets: [
