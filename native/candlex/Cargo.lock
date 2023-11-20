@@ -122,7 +122,7 @@ dependencies = [
 [[package]]
 name = "candle-kernels"
 version = "0.3.1"
-source = "git+https://github.com/huggingface/candle#9ab3f9729fc1444687578a9dc913760b0d8d9963"
+source = "git+https://github.com/huggingface/candle#f49bf6a81dca20b4b684e9b6e4fdec868fb53c45"
 dependencies = [
  "anyhow",
  "glob",
