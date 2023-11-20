@@ -15,6 +15,7 @@ defmodule Candlex.Native do
     version: version,
     nif_versions: ["2.16"],
     targets: [
+      "arm-unknown-linux-gnueabihf",
       "aarch64-apple-darwin",
       "aarch64-unknown-linux-gnu",
       "x86_64-apple-darwin",
