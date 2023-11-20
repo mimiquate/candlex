@@ -20,6 +20,7 @@ defmodule Candlex.Native do
     targets: [
       "aarch64-apple-darwin",
       "aarch64-unknown-linux-gnu",
+      "arm-unknown-linux-gnueabihf",
       "x86_64-apple-darwin",
       "x86_64-unknown-linux-gnu"
     ],
