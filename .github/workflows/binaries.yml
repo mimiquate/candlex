@@ -102,3 +102,37 @@ jobs:
           draft: true
           files: ${{ steps.precompile.outputs.file-path }}
         if: startsWith(github.ref, 'refs/tags/')
+
+  build_metal:
+    name: metal / ${{ matrix.target }} / ${{ matrix.os }}
+    runs-on: macos-13
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            os: macos-13
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup target add ${{ matrix.target }}
+
+      - uses: philss/rustler-precompiled-action@main
+        id: precompile
+        with:
+          project-dir: ${{ env.PROJECT_DIR }}
+          project-name: ${{ env.PROJECT_NAME }}
+          project-version: ${{ env.PROJECT_VERSION }}
+          target: ${{ matrix.target }}
+          use-cross: null
+          nif-version: ${{ env.NIF_VERSION }}
+          variant: metal
+          cargo-args: "--features metal"
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: ${{ steps.precompile.outputs.file-path }}
+        if: startsWith(github.ref, 'refs/tags/')

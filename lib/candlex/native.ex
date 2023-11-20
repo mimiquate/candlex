@@ -25,6 +25,7 @@ defmodule Candlex.Native do
       "x86_64-unknown-linux-gnu"
     ],
     variants: %{
+      "aarch64-apple-darwin" => [metal: fn -> Application.compile_env(:candlex, :use_metal) end],
       "x86_64-unknown-linux-gnu" => [cuda: fn -> Application.compile_env(:candlex, :use_cuda) end]
     }
 

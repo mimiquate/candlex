@@ -57,6 +57,7 @@ only the host CPU.
 | --- | --- |
 | cpu | |
 | cuda | CUDA 12.x |
+| metal | Metal ? |
 
 To use Candlex with NVidia GPU you need [CUDA](https://developer.nvidia.com/cuda-downloads) compatible with your
 GPU drivers.

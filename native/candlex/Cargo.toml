@@ -22,3 +22,4 @@ anyhow = "1.0.75"
 
 [features]
 cuda = ["candle-core/cuda"]
+metal = ["candle-core/metal"]
