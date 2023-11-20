@@ -728,7 +728,11 @@ defmodule Candlex.Backend do
 
   defp narrow(t, [start | starts], [length | lengths], axis, shape) do
     dim = elem(shape, axis)
-    start = min(start, dim - length)
+
+    start =
+      start
+      |> Nx.to_number()
+      |> min(dim - length)
 
     if start == 0 and length == dim do
       # Nothing to narrow at this step
@@ -910,8 +914,10 @@ defmodule Candlex.Backend do
 
   for op <- [
         :map,
-        :random_normal, # TODO: Remove after nx 0.7 is released
-        :random_uniform, # TODO: Remove after nx 0.7 is released
+        # TODO: Remove after nx 0.7 is released
+        :random_normal,
+        # TODO: Remove after nx 0.7 is released
+        :random_uniform,
         :triangular_solve,
         :window_max,
         :window_min,
