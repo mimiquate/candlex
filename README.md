@@ -14,7 +14,7 @@ by adding `candlex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:candlex, "~> 0.1.4"}
+    {:candlex, "~> 0.1.5"}
   ]
 end
 ```
