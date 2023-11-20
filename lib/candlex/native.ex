@@ -9,9 +9,16 @@ defmodule Candlex.Native do
   # mode = if Mix.env() in [:dev, :test], do: :debug, else: :release
   mode = :release
 
+  features =
+    cond do
+      Application.compile_env(:candlex, :use_cuda) -> [:cuda]
+      Application.compile_env(:candlex, :use_metal) -> [:metal]
+      true -> []
+    end
+
   use RustlerPrecompiled,
     otp_app: :candlex,
-    features: if(Application.compile_env(:candlex, :use_cuda), do: [:cuda], else: []),
+    features: features,
     base_url: "#{source_url}/releases/download/v#{version}",
     force_build: System.get_env("CANDLEX_NIF_BUILD") in ["1", "true"],
     mode: mode,
@@ -25,6 +32,7 @@ defmodule Candlex.Native do
       "x86_64-unknown-linux-gnu"
     ],
     variants: %{
+      "aarch64-apple-darwin" => [metal: fn -> Application.compile_env(:candlex, :use_metal) end],
       "x86_64-unknown-linux-gnu" => [cuda: fn -> Application.compile_env(:candlex, :use_cuda) end]
     }
 
@@ -138,6 +146,7 @@ defmodule Candlex.Native do
   end
 
   def is_cuda_available(), do: error()
+  def is_metal_available(), do: error()
   def to_device(_tensor, _device), do: error()
 
   defp error(), do: :erlang.nif_error(:nif_not_loaded)

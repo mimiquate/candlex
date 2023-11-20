@@ -121,7 +121,8 @@ rustler::init! {
         tensors::sum_pool2d,
         tensors::max_pool2d,
         tensors::contiguous,
-        devices::is_cuda_available
+        devices::is_cuda_available,
+        devices::is_metal_available
     ],
     load = load
 }
