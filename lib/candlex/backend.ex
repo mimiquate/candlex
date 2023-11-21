@@ -534,8 +534,8 @@ defmodule Candlex.Backend do
         [{pad, pad}, {pad, pad}] ->
           pad
 
-        _ ->
-          raise("unsupported padding")
+        pad ->
+          raise("unsupported padding #{inspect(pad)}")
       end
 
     stride =
