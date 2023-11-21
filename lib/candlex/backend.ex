@@ -528,33 +528,16 @@ defmodule Candlex.Backend do
       |> Native.to_type(to_candle_dtype(out_type))
       |> unwrap!()
 
-    # IO.inspect(kernel.shape)
-    # IO.inspect(tensor)
-    # IO.inspect(opts[:padding])
-    # IO.inspect(opts[:strides])
-
     padding =
       case opts[:padding] do
-        [{0, 0}] ->
-          0
-
         [{pad, pad}] ->
           pad
-
-        [{padl, padr}] ->
-          raise("only equal left and right pad supported, left pad: #{padl}, right pad: #{padr}")
-
-        [{0, 0}, {0, 0}] ->
-          0
 
         [{pad, pad}, {pad, pad}] ->
           pad
 
-        [{padl, padr}, {_padl, _padr}] ->
-          raise("wrong kernel size , even #{padr}, #{padl}")
-
         _ ->
-          raise("unsupported shape")
+          raise("unsupported padding")
       end
 
     stride =
@@ -565,11 +548,8 @@ defmodule Candlex.Backend do
         [strid, strid] ->
           strid
 
-        [stridr, stridb] ->
-          raise("only square strides are allowed, right: #{stridb}, down: #{stridr}")
-
         _ ->
-          raise("unsupported shape")
+          raise("unsupported stride")
       end
 
     conv_opts = %Candlex.Native.ConvOpts{padding: padding, stride: stride, dilation: 1, groups: 1}

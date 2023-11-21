@@ -1,7 +1,3 @@
-defmodule Candlex.Native.ConvOpts do
-  defstruct [:padding, :stride, :dilation, :groups]
-end
-
 defmodule Candlex.Native do
   @moduledoc false
 
@@ -143,4 +139,8 @@ defmodule Candlex.Native do
   def to_device(_tensor, _device), do: error()
 
   defp error(), do: :erlang.nif_error(:nif_not_loaded)
+end
+
+defmodule Candlex.Native.ConvOpts do
+  defstruct [:padding, :stride, :dilation, :groups]
 end
