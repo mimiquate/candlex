@@ -337,35 +337,56 @@ pub fn concatenate(ex_tensors: Vec<ExTensor>, dim: usize) -> Result<ExTensor, Ca
     Ok(ExTensor::new(Tensor::cat(&tensors[..], dim)?))
 }
 
+#[derive(NifStruct)]
+#[module = "Candlex.Native.ConvOpts"]
+pub struct ConvOpts {
+    padding: usize,
+    stride: usize,
+    dilation: usize,
+    groups: usize,
+}
+impl Default for ConvOpts {
+    fn default() -> Self {
+        Self {
+            padding: 0,
+            stride: 1,
+            dilation: 1,
+            groups: 1,
+        }
+    }
+}
+
 #[rustler::nif(schedule = "DirtyCpu")]
-pub fn conv1d(tensor: ExTensor, kernel: ExTensor) -> Result<ExTensor, CandlexError> {
-    let padding = 0;
-    let stride = 1;
-    let dilation = 1;
-    let groups = 1;
+pub fn conv1d(
+    tensor: ExTensor,
+    kernel: ExTensor,
+    options: Option<ConvOpts>,
+) -> Result<ExTensor, CandlexError> {
+    let opts = options.unwrap_or_default();
 
     Ok(ExTensor::new(tensor.conv1d(
         kernel.deref(),
-        padding,
-        stride,
-        dilation,
-        groups,
+        opts.padding,
+        opts.stride,
+        opts.dilation,
+        opts.groups,
     )?))
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
-pub fn conv2d(tensor: ExTensor, kernel: ExTensor) -> Result<ExTensor, CandlexError> {
-    let padding = 0;
-    let stride = 1;
-    let dilation = 1;
-    let groups = 1;
+pub fn conv2d(
+    tensor: ExTensor,
+    kernel: ExTensor,
+    options: Option<ConvOpts>,
+) -> Result<ExTensor, CandlexError> {
+    let opts = options.unwrap_or_default();
 
     Ok(ExTensor::new(tensor.conv2d(
         kernel.deref(),
-        padding,
-        stride,
-        dilation,
-        groups,
+        opts.padding,
+        opts.stride,
+        opts.dilation,
+        opts.groups,
     )?))
 }
 

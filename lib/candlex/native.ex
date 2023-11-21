@@ -49,8 +49,8 @@ defmodule Candlex.Native do
   def dtype(_tensor), do: error()
   def t_shape(_tensor), do: error()
   def concatenate(_tensors, _axis), do: error()
-  def conv1d(_tensor, _kernel), do: error()
-  def conv2d(_tensor, _kernel), do: error()
+  def conv1d(_tensor, _kernel, _opts), do: error()
+  def conv2d(_tensor, _kernel, _opts), do: error()
   def slice_scatter(_tensor, _src, _dim, _start), do: error()
   def pad_with_zeros(_tensor, _left, _right), do: error()
   def clamp(_tensor, _min, _max), do: error()
@@ -135,4 +135,8 @@ defmodule Candlex.Native do
   def to_device(_tensor, _device), do: error()
 
   defp error(), do: :erlang.nif_error(:nif_not_loaded)
+end
+
+defmodule Candlex.Native.ConvOpts do
+  defstruct [:padding, :stride, :dilation, :groups]
 end
