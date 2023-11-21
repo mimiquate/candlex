@@ -1554,7 +1554,7 @@ defmodule CandlexTest do
         strides: 4,
         output_permutation: [0, 3, 1, 2]
       )
-      |> assert_close(
+      |> assert_equal(
         t([
           [
             [
