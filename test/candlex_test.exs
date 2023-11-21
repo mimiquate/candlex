@@ -1534,7 +1534,7 @@ defmodule CandlexTest do
 
       Nx.iota({1, 1, 10, 10})
       |> Nx.conv(Nx.iota({2, 1, 3, 3}), strides: 4)
-      |> assert_close(
+      |> assert_equal(
         t([
           [
             [
