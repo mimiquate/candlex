@@ -528,10 +528,36 @@ defmodule Candlex.Backend do
       |> Native.to_type(to_candle_dtype(out_type))
       |> unwrap!()
 
+    padding =
+      case opts[:padding] do
+        [{pad, pad}] ->
+          pad
+
+        [{pad, pad}, {pad, pad}] ->
+          pad
+
+        _ ->
+          raise("unsupported padding")
+      end
+
+    stride =
+      case opts[:strides] do
+        [strid] ->
+          strid
+
+        [strid, strid] ->
+          strid
+
+        _ ->
+          raise("unsupported stride")
+      end
+
+    conv_opts = %Candlex.Native.ConvOpts{padding: padding, stride: stride, dilation: 1, groups: 1}
+
     native_result =
       case Nx.rank(shape) do
-        3 -> Native.conv1d(native_tensor, native_kernel)
-        4 -> Native.conv2d(native_tensor, native_kernel)
+        3 -> Native.conv1d(native_tensor, native_kernel, conv_opts)
+        4 -> Native.conv2d(native_tensor, native_kernel, conv_opts)
         rank -> raise("unsupported conv for tensor of rank #{rank}, only 3 or 4 supported")
       end
 

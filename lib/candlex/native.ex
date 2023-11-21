@@ -136,3 +136,7 @@ defmodule Candlex.Native do
 
   defp error(), do: :erlang.nif_error(:nif_not_loaded)
 end
+
+defmodule Candlex.Native.ConvOpts do
+  defstruct [:padding, :stride, :dilation, :groups]
+end
