@@ -495,8 +495,6 @@ defmodule Candlex.Backend do
     unsupported_option!(opts, :feature_group_size, 1)
 
     # For now we assume:
-    # strides = opts[:strides] # [1, 1]
-    # padding = opts[:padding] # [{0, 0}, {0, 0}]
     # input_dilation = opts[:input_dilation] # [1, 1]
     # kernel_dilation = opts[:kernel_dilation] # [1, 1]
 
