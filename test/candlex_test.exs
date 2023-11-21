@@ -1413,11 +1413,9 @@ defmodule CandlexTest do
     end
 
     test "conv" do
-      Nx.iota({9})
-      |> Nx.reshape({1, 1, 3, 3})
+      Nx.iota({1, 1, 3, 3})
       |> Nx.conv(
-        Nx.iota({4})
-        |> Nx.reshape({4, 1, 1, 1}),
+        Nx.iota({4, 1, 1, 1}),
         strides: [1, 1]
       )
       |> assert_equal(
@@ -1575,11 +1573,9 @@ defmodule CandlexTest do
       # |> Nx.conv(Nx.iota({2, 1, 2, 2}), strides: 4)
       # |> assert_raise()
 
-      # Nx.iota({9})
-      # |> Nx.reshape({1, 1, 3, 3})
+      # Nx.iota({1, 1, 3, 3})
       # |> Nx.conv(
-      #   Nx.iota({8})
-      #   |> Nx.reshape({4, 1, 2, 1}),
+      #   Nx.iota({4, 1, 2, 1}),
       #   strides: 2,
       #   padding: :same,
       #   kernel_dilation: [2, 1]
