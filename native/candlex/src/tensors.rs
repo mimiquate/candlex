@@ -362,7 +362,7 @@ pub fn conv1d(
     kernel: ExTensor,
     options: Option<ConvOpts>,
 ) -> Result<ExTensor, CandlexError> {
-    let opts = options.unwrap_or(Default::default());
+    let opts = options.unwrap_or_default();
 
     Ok(ExTensor::new(tensor.conv1d(
         kernel.deref(),
