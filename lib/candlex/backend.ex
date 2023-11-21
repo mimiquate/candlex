@@ -546,8 +546,8 @@ defmodule Candlex.Backend do
         [strid, strid] ->
           strid
 
-        _ ->
-          raise("unsupported stride")
+        strides ->
+          raise("unsupported strides #{inspect(strides)}")
       end
 
     conv_opts = %Candlex.Native.ConvOpts{padding: padding, stride: stride, dilation: 1, groups: 1}
