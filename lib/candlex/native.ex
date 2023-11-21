@@ -28,14 +28,6 @@ defmodule Candlex.Native do
       "x86_64-unknown-linux-gnu" => [cuda: fn -> Application.compile_env(:candlex, :use_cuda) end]
     }
 
-  use Rustler,
-    otp_app: :candlex,
-    crate: "candlex",
-    target: System.get_env("RUSTLER_TARGET"),
-    mode: mode
-
-  # version: version
-
   # Rustler will override all the below stub functions with real NIFs
   def from_binary(_binary, _dtype, _shape, _device), do: error()
   def to_binary(_tensor), do: error()
