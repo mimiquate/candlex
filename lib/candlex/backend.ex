@@ -528,26 +528,16 @@ defmodule Candlex.Backend do
 
     padding =
       case opts[:padding] do
-        [{pad, pad}] ->
-          pad
-
-        [{pad, pad}, {pad, pad}] ->
-          pad
-
-        pad ->
-          raise("unsupported padding #{inspect(pad)}")
+        [{p, p}] -> p
+        [{p, p}, {p, p}] -> p
+        p -> raise("unsupported padding #{inspect(p)}")
       end
 
     stride =
       case opts[:strides] do
-        [strid] ->
-          strid
-
-        [strid, strid] ->
-          strid
-
-        strides ->
-          raise("unsupported strides #{inspect(strides)}")
+        [s] -> s
+        [s, s] -> s
+        s -> raise("unsupported strides #{inspect(s)}")
       end
 
     conv_opts = %Candlex.Native.ConvOpts{padding: padding, stride: stride, dilation: 1, groups: 1}
