@@ -391,6 +391,36 @@ pub fn conv2d(
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
+pub fn max_pool2d(
+    tensor: ExTensor,
+    dimensions: Vec<usize>,
+    strides: Vec<usize>,
+) -> Result<ExTensor, CandlexError> {
+    let (dx, dy) = match &dimensions[..] {
+        &[first, second] => (first, second),
+        _ => {
+            return Err(CandlexError::Other(format!(
+                "unsupported dimensions{:?}",
+                dimensions
+            )))
+        }
+    };
+
+    let (strx, stry) = match &strides[..] {
+        &[first, second] => (first, second),
+        _ => {
+            return Err(CandlexError::Other(format!(
+                "unsupported strides{:?}",
+                strides
+            )))
+        }
+    };
+    Ok(ExTensor::new(
+        tensor.max_pool2d_with_stride((dx, dy), (strx, stry))?,
+    ))
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
 pub fn divide(left: ExTensor, right: ExTensor) -> Result<ExTensor, CandlexError> {
     Ok(ExTensor::new(
         // Need to force float in case we receive integers, given

@@ -55,6 +55,7 @@ defmodule Candlex.Native do
   def pad_with_zeros(_tensor, _left, _right), do: error()
   def clamp(_tensor, _min, _max), do: error()
   def reverse(_tensor, _axes), do: error()
+  def max_pool2d(_tensor, _shape, _stride), do: error()
 
   for op <- [
         :abs,
