@@ -502,10 +502,11 @@ defmodule Candlex.Backend do
         s -> raise("unsupported strides #{inspect(s)}")
       end
 
-    native_tensor = tensor |> from_nx() |> Native.to_type(to_candle_dtype(out_type)) |> unwrap!()
-    native_result = Native.max_pool2d(native_tensor, win_dims, strides)
-
-    native_result
+    tensor
+    |> from_nx()
+    |> Native.to_type(to_candle_dtype(out_type))
+    |> unwrap!()
+    |> Native.max_pool2d(win_dims, strides)
     |> unwrap!()
     |> to_nx(out)
   end
