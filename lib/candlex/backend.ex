@@ -492,7 +492,7 @@ defmodule Candlex.Backend do
   def window_max(%T{type: out_type} = out, tensor, {1, 1, dx, dy} = _window_dimensions, opts) do
     strides =
       case opts[:strides] do
-        [1, 1, sx, sy] -> [sx, sy]
+        [1, 1, sx, sy] -> {sx, sy}
         s -> raise("unsupported strides #{inspect(s)}")
       end
 
@@ -500,7 +500,7 @@ defmodule Candlex.Backend do
     |> from_nx()
     |> Native.to_type(to_candle_dtype(out_type))
     |> unwrap!()
-    |> Native.max_pool2d([dx, dy], strides)
+    |> Native.max_pool2d({dx, dy}, strides)
     |> unwrap!()
     |> to_nx(out)
   end
