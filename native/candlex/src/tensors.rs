@@ -393,15 +393,15 @@ pub fn conv2d(
 #[rustler::nif(schedule = "DirtyCpu")]
 pub fn max_pool2d(
     tensor: ExTensor,
-    dimensions: Vec<usize>,
+    dims: Vec<usize>,
     strides: Vec<usize>,
 ) -> Result<ExTensor, CandlexError> {
-    let (dx, dy) = match &dimensions[..] {
+    let (dx, dy) = match &dims[..] {
         &[first, second] => (first, second),
         _ => {
             return Err(CandlexError::Other(format!(
                 "unsupported dimensions{:?}",
-                dimensions
+                dims
             )))
         }
     };
