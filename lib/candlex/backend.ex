@@ -489,6 +489,23 @@ defmodule Candlex.Backend do
   end
 
   @impl true
+  def window_max(%T{type: out_type} = out, tensor, {1, 1, dx, dy} = _window_dimensions, opts) do
+    strides =
+      case opts[:strides] do
+        [1, 1, sx, sy] -> {sx, sy}
+        s -> raise("unsupported strides #{inspect(s)}")
+      end
+
+    tensor
+    |> from_nx()
+    |> Native.to_type(to_candle_dtype(out_type))
+    |> unwrap!()
+    |> Native.max_pool2d({dx, dy}, strides)
+    |> unwrap!()
+    |> to_nx(out)
+  end
+
+  @impl true
   def conv(%T{type: out_type} = out, %T{shape: shape} = tensor, %T{} = kernel, opts) do
     # TODO: Support more opts
     unsupported_option!(opts, :batch_group_size, 1)
@@ -933,7 +950,6 @@ defmodule Candlex.Backend do
         # TODO: Remove after nx 0.7 is released
         :random_uniform,
         :triangular_solve,
-        :window_max,
         :window_min,
         :window_product,
         :window_sum

@@ -115,6 +115,7 @@ rustler::init! {
         tensors::left_shift,
         tensors::right_shift,
         tensors::to_device,
+        tensors::max_pool2d,
         devices::is_cuda_available
     ],
     load = load
