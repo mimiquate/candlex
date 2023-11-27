@@ -408,34 +408,27 @@ defmodule Candlex.Backend do
   @impl true
   def put_slice(
         %T{} = out,
-        %T{shape: shape} = t,
+        %T{} = t,
         [_ | _] = start_indices,
         %T{shape: slice_shape} = slice
       ) do
-    [_last_dim | leading_dimensions] = shape |> Tuple.to_list() |> Enum.reverse()
+    ranges =
+      slice_shape
+      |> Tuple.to_list()
+      |> Enum.with_index(fn axis_size, i ->
+        start_index =
+          start_indices
+          |> Enum.at(i)
+          |> Nx.to_number()
 
-    [_last_slice_dim | leading_slice_dimensions] =
-      slice_shape |> Tuple.to_list() |> Enum.reverse()
+        {start_index, start_index + axis_size - 1}
+      end)
 
-    [last_start_index | leading_start_indices] = Enum.reverse(start_indices)
-
-    if leading_dimensions != leading_slice_dimensions do
-      raise "Unsupported put_slice shapes, tensor=#{inspect(shape)} and slice=#{inspect(slice_shape)}. All-but-last dimensions in slice need to be equal to corresponding dimension in tensor."
-    end
-
-    if Enum.all?(leading_start_indices, fn i -> Nx.equal(i, 0) end) do
-      t
-      |> from_nx()
-      |> Native.slice_scatter(
-        from_nx(slice),
-        length(start_indices) - 1,
-        Nx.to_number(last_start_index)
-      )
-      |> unwrap!()
-      |> to_nx(out)
-    else
-      raise "put_slice only supports last start index not to be 0 for now"
-    end
+    t
+    |> from_nx()
+    |> Native.slice_assign(ranges, from_nx(slice))
+    |> unwrap!()
+    |> to_nx(out)
   end
 
   @impl true
