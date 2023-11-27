@@ -51,7 +51,7 @@ defmodule Candlex.Native do
   def concatenate(_tensors, _axis), do: error()
   def conv1d(_tensor, _kernel, _opts), do: error()
   def conv2d(_tensor, _kernel, _opts), do: error()
-  def slice_scatter(_tensor, _src, _dim, _start), do: error()
+  def slice_assign(_tensor, _ranges, _src), do: error()
   def pad_with_zeros(_tensor, _left, _right), do: error()
   def clamp(_tensor, _min, _max), do: error()
   def reverse(_tensor, _axes), do: error()

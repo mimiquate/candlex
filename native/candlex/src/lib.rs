@@ -71,7 +71,7 @@ rustler::init! {
         tensors::conv1d,
         tensors::conv2d,
         tensors::permute,
-        tensors::slice_scatter,
+        tensors::slice_assign,
         tensors::pad_with_zeros,
         tensors::dot,
         tensors::matmul,

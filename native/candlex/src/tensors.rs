@@ -288,13 +288,22 @@ pub fn reshape(t: ExTensor, shape: Term) -> Result<ExTensor, CandlexError> {
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
-pub fn slice_scatter(
+pub fn slice_assign(
     t: ExTensor,
+    ranges: Vec<(usize, usize)>,
     src: ExTensor,
-    dim: usize,
-    start: usize,
 ) -> Result<ExTensor, CandlexError> {
-    Ok(ExTensor::new(t.slice_scatter(src.deref(), dim, start)?))
+    use std::ops::Bound;
+
+    Ok(ExTensor::new(
+        t.slice_assign(
+            &ranges
+                .iter()
+                .map(|(start, end)| (Bound::Included(*start), Bound::Included(*end)))
+                .collect::<Vec<(Bound<usize>, Bound<usize>)>>(),
+            src.deref(),
+        )?,
+    ))
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
