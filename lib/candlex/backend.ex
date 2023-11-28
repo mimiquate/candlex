@@ -584,6 +584,27 @@ defmodule Candlex.Backend do
     |> to_nx(out)
   end
 
+  @impl true
+  def dot(
+        %T{shape: out_shape} = out,
+        %T{shape: {_, _, k}} = left,
+        [2],
+        [],
+        %T{shape: {_, k, _}} = right,
+        [1],
+        []
+      ) do
+    {left, right} = maybe_upcast(left, right)
+
+    from_nx(left)
+    |> Native.matmul(from_nx(right))
+    |> unwrap!()
+    # Reinstate 1-D axes removed by candle
+    |> Native.reshape(out_shape)
+    |> unwrap!()
+    |> to_nx(out)
+  end
+
   def dot(
         %T{} = out,
         %T{shape: {_, _}} = left,
