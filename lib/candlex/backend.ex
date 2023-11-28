@@ -571,12 +571,11 @@ defmodule Candlex.Backend do
         %T{shape: left_shape} = left,
         [left_axis],
         [],
-        %T{shape: right_shape} = right,
+        %T{shape: {_}} = right,
         [0],
         []
       )
-      when tuple_size(left_shape) >= 1 and tuple_size(right_shape) == 1 and
-             left_axis == tuple_size(left_shape) - 1 do
+      when tuple_size(left_shape) >= 1 and left_axis == tuple_size(left_shape) - 1 do
     {left, right} = maybe_upcast(left, right)
 
     from_nx(left)
@@ -587,14 +586,13 @@ defmodule Candlex.Backend do
 
   def dot(
         %T{} = out,
-        %T{shape: left_shape} = left,
+        %T{shape: {_, _}} = left,
         [1],
         [],
-        %T{shape: right_shape} = right,
+        %T{shape: {_, _}} = right,
         [0],
         []
-      )
-      when tuple_size(left_shape) == 2 and tuple_size(right_shape) == 2 do
+      ) do
     {left, right} = maybe_upcast(left, right)
 
     Native.matmul(
@@ -607,14 +605,13 @@ defmodule Candlex.Backend do
 
   def dot(
         out,
-        %T{shape: left_shape} = left,
+        %T{shape: {_, _}} = left,
         [0],
         left_batched_axes,
         right,
         right_axes,
         right_batched_axes
-      )
-      when tuple_size(left_shape) == 2 do
+      ) do
     dot(
       out,
       left |> Nx.transpose(axes: [1, 0]),
@@ -631,11 +628,10 @@ defmodule Candlex.Backend do
         left,
         left_axes,
         left_batched_axes,
-        %T{shape: right_shape} = right,
+        %T{shape: {_, _}} = right,
         [1],
         right_batched_axes
-      )
-      when tuple_size(right_shape) == 2 do
+      ) do
     dot(
       out,
       left,
