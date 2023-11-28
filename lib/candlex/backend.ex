@@ -811,6 +811,21 @@ defmodule Candlex.Backend do
     |> to_nx(out)
   end
 
+  def window_max(%T{} = _out, tensor, {1, dx, dy, 1}, opts) do
+    [1, 1, 1, 1] = opts[:window_dilations]
+    [1, sx, sy, 1] = opts[:strides]
+    [{0, 0}, {px, px}, {py, py}, {0, 0}] = opts[:padding]
+
+    tensor
+    |> Nx.transpose(axes: [0, 3, 1, 2])
+    |> Nx.window_max(
+      {1, 1, dx, dy},
+      strides: [1, 1, sx, sy],
+      padding: [{0, 0}, {0, 0}, {px, px}, {py, py}]
+    )
+    |> Nx.transpose(axes: [0, 2, 3, 1])
+  end
+
   @impl true
   def window_sum(%T{} = out, %T{} = tensor, {1, 1, dx, dy}, opts) do
     [1, 1, 1, 1] = opts[:window_dilations]
