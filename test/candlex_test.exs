@@ -561,18 +561,21 @@ defmodule CandlexTest do
       #   [45, 60, 75]
       # ))
 
-      # t([[[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]]]], names: [:shard, :batch, :x, :y, :z])
-      # |> Nx.dot(t([2.0, 2.0], names: [:data]))
-      # |> assert_equal(t(
-      #   [
-      #     [
-      #       [
-      #         [6.0, 14.0],
-      #         [22.0, 30.0]
-      #       ]
-      #     ]
-      #   ]
-      # ))
+      t(
+        [[[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]]]],
+        names: [:shard, :batch, :x, :y, :z]
+      )
+      |> Nx.dot(t([2.0, 2.0], names: [:data]))
+      |> assert_equal(
+        t([
+          [
+            [
+              [6.0, 14.0],
+              [22.0, 30.0]
+            ]
+          ]
+        ])
+      )
 
       # Dot product of n-D and m-D tensors
 
@@ -621,7 +624,6 @@ defmodule CandlexTest do
         ])
       )
 
-      # TODO:
       t1
       |> Nx.dot([0], [], t2, [1], [])
       |> assert_equal(
@@ -640,14 +642,14 @@ defmodule CandlexTest do
         ])
       )
 
-      # t1
-      # |> Nx.dot([1], [], t2, [1], [])
-      # |> assert_equal(t(
-      #   [
-      #     [50, 110],
-      #     [110, 250]
-      #   ]
-      # ))
+      t1
+      |> Nx.dot([1], [], t2, [1], [])
+      |> assert_equal(
+        t([
+          [50, 110],
+          [110, 250]
+        ])
+      )
 
       # t1
       # |> Nx.dot([0, 1], [], t2, [0, 1], [])
