@@ -585,20 +585,24 @@ defmodule Candlex.Backend do
   end
 
   def dot(
-        %T{} = out,
-        %T{shape: {_, _}} = left,
-        [1],
+        %T{shape: out_shape} = out,
+        %T{shape: left_shape} = left,
+        [left_axis],
         [],
-        %T{shape: {_, _}} = right,
-        [0],
+        %T{shape: right_shape} = right,
+        [right_axis],
         []
-      ) do
+      )
+      when tuple_size(left_shape) >= 2 and tuple_size(right_shape) >= 2 and
+             left_axis == tuple_size(left_shape) - 1 and right_axis == tuple_size(right_shape) - 2 and
+             elem(left_shape, left_axis) == elem(right_shape, right_axis) do
     {left, right} = maybe_upcast(left, right)
 
-    Native.matmul(
-      from_nx(left),
-      from_nx(right)
-    )
+    from_nx(left)
+    |> Native.matmul(from_nx(right))
+    |> unwrap!()
+    # Reinstate 1-D axes removed by candle
+    |> Native.reshape(out_shape)
     |> unwrap!()
     |> to_nx(out)
   end
