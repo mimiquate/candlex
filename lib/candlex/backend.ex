@@ -584,7 +584,6 @@ defmodule Candlex.Backend do
     |> to_nx(out)
   end
 
-  @impl true
   def dot(
         %T{shape: out_shape} = out,
         %T{shape: {_, _, k}} = left,
