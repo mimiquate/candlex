@@ -2294,8 +2294,8 @@ defmodule CandlexTest do
 
       t([[1, 2], [11, 12]])
       |> Nx.take(t([[0, 0], [1, 1], [0, 0]]))
-      |> assert_equal(t(
-        [
+      |> assert_equal(
+        t([
           [
             [1, 2],
             [1, 2]
@@ -2308,13 +2308,13 @@ defmodule CandlexTest do
             [1, 2],
             [1, 2]
           ]
-        ]
-      ))
+        ])
+      )
 
       t([[1, 2], [11, 12]])
       |> Nx.take(t([[0, 0], [1, 1], [0, 0]]), axis: 1)
-      |> assert_equal(t(
-        [
+      |> assert_equal(
+        t([
           [
             [1, 1],
             [2, 2],
@@ -2325,13 +2325,13 @@ defmodule CandlexTest do
             [12, 12],
             [11, 11]
           ]
-        ]
-      ))
+        ])
+      )
 
       t([[[1, 2], [11, 12]], [[101, 102], [111, 112]]])
       |> Nx.take(t([[0, 0, 0], [1, 1, 1], [0, 0, 0]]), axis: 1)
-      |> assert_equal(t(
-        [
+      |> assert_equal(
+        t([
           [
             [
               [1, 2],
@@ -2366,8 +2366,8 @@ defmodule CandlexTest do
               [101, 102]
             ]
           ]
-        ]
-      ))
+        ])
+      )
     end
 
     test "clip" do
