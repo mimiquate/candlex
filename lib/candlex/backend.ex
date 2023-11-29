@@ -448,14 +448,12 @@ defmodule Candlex.Backend do
   end
 
   @impl true
-  def take(%T{} = out, %T{} = tensor, %T{} = indexes, axis) do
-    if Nx.rank(indexes) > 1 do
-      raise "only indexes of rank=1 supported for now"
-    end
-
+  def take(%T{shape: out_shape} = out, %T{} = tensor, %T{} = indexes, axis) do
     tensor
     |> from_nx()
-    |> Native.index_select(from_nx(indexes), axis)
+    |> Native.index_select(from_nx(Nx.flatten(indexes)), axis)
+    |> unwrap!()
+    |> Native.reshape(out_shape)
     |> unwrap!()
     |> to_nx(out)
   end
