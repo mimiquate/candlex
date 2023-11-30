@@ -470,8 +470,9 @@ defmodule Candlex.Backend do
   # N-dim
 
   @impl true
-  def argsort(%T{} = out, %T{shape: {_}} = tensor, _opts) do
-    # IO.inspect(opts)
+  def argsort(%T{} = out, %T{shape: {_}} = tensor, opts) do
+    0 = opts[:axis]
+    :asc = opts[:direction]
 
     tensor
     |> from_nx()
