@@ -683,15 +683,21 @@ defmodule Candlex.Backend do
     out
   end
 
-  def pad(%T{} = out, %T{} = t, %T{shape: {}} = pad_value, [{low, high, 0 = _inner}]) do
+  def pad(%T{} = out, %T{} = t, %T{shape: {}} = pad_value, padding_configs) do
     if !Nx.equal(pad_value, 0) do
       raise "only pad_value=0 supported for now"
     end
 
-    t
-    |> from_nx()
-    |> Native.pad_with_zeros(low, high)
-    |> unwrap!()
+    padding_configs
+    |> Enum.with_index()
+    |> Enum.reduce(
+      from_nx(t),
+      fn {{low, high, 0 = _inner}, i}, acc ->
+        acc
+        |> Native.pad_with_zeros(i, low, high)
+        |> unwrap!()
+      end
+    )
     |> to_nx(out)
   end
 

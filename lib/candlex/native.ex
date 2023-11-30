@@ -52,7 +52,7 @@ defmodule Candlex.Native do
   def conv1d(_tensor, _kernel, _opts), do: error()
   def conv2d(_tensor, _kernel, _opts), do: error()
   def slice_assign(_tensor, _ranges, _src), do: error()
-  def pad_with_zeros(_tensor, _left, _right), do: error()
+  def pad_with_zeros(_tensor, _dim, _left, _right), do: error()
   def clamp(_tensor, _min, _max), do: error()
   def reverse(_tensor, _axes), do: error()
   def argsort(_tensor), do: error()
