@@ -694,10 +694,11 @@ defmodule Candlex.Backend do
       from_nx(t),
       fn {{low, high, 0 = _inner}, i}, acc ->
         acc
-        |> Native.pad_with_zeros(i, low, high)
+        |> Native.pad_with_zeros(i, max(low, 0), max(high, 0))
         |> unwrap!()
       end
     )
+    |> slice_negative_padding(padding_configs)
     |> to_nx(out)
   end
 
@@ -993,6 +994,33 @@ defmodule Candlex.Backend do
     native_tensor
     |> Native.permute(permutation)
     |> unwrap!()
+  end
+
+  defp slice_negative_padding(native_tensor, padding_configs) do
+    if Enum.any?(padding_configs, fn {low, high, _} -> low < 0 or high < 0 end) do
+      shape =
+        native_tensor
+        |> Native.t_shape()
+        |> unwrap!()
+
+      {starts, lengths} =
+        padding_configs
+        |> Enum.with_index(fn {low, high, 0 = _inner}, i ->
+          axis_size = elem(shape, i)
+          start = max(-low, 0)
+
+          {
+            start,
+            axis_size - start + min(high, 0)
+          }
+        end)
+        |> Enum.unzip()
+
+      native_tensor
+      |> narrow(starts, lengths, 0, shape)
+    else
+      native_tensor
+    end
   end
 
   @doc false
