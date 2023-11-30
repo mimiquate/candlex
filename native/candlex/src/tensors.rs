@@ -1,9 +1,9 @@
 use crate::atoms;
 use crate::error::CandlexError;
 use crate::ops::{
-    Acos, Acosh, Asin, Asinh, Atan, Atan2, Atanh, BitAnd, BitNot, BitOr, BitXor, Cbrt, Cosh,
-    ErfInv, Erfc, Expm1, IsInf, IsNan, Log1p, LogicalAnd, LogicalOr, LogicalXor, Pow, Remainder,
-    Shl, Shr, Sigmoid, Sign, Sinh, Tan,
+    Acos, Acosh, Argsort, Asin, Asinh, Atan, Atan2, Atanh, BitAnd, BitNot, BitOr, BitXor, Cbrt,
+    Cosh, ErfInv, Erfc, Expm1, IsInf, IsNan, Log1p, LogicalAnd, LogicalOr, LogicalXor, Pow,
+    Remainder, Shl, Shr, Sigmoid, Sign, Sinh, Tan,
 };
 use candle_core::{DType, Device, Tensor};
 use half::{bf16, f16};
@@ -482,6 +482,7 @@ unary_nif!(tanh);
 
 custom_unary_nif!(acos, Acos);
 custom_unary_nif!(acosh, Acosh);
+custom_unary_nif!(argsort, Argsort);
 custom_unary_nif!(asin, Asin);
 custom_unary_nif!(asinh, Asinh);
 custom_unary_nif!(atan, Atan);

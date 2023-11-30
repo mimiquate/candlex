@@ -2594,6 +2594,44 @@ defmodule CandlexTest do
       )
     end
 
+    test "argsort" do
+      # integer not supported
+      # t([16, 23, 42, 4, 8, 15])
+      # |> Nx.argsort()
+      # |> assert_equal(t([3, 4, 5, 0, 1, 2]))
+
+      t([16.0, 23, 42, 4, 8, 15])
+      |> Nx.argsort()
+      |> assert_equal(t([3, 4, 5, 0, 1, 2]))
+
+      # t([[3, 1, 7], [2, 5, 4]], names: [:x, :y])
+      # |> Nx.argsort(axis: :x)
+      # |> assert_equal(t(
+      #   [
+      #     [1, 0, 1],
+      #     [0, 1, 0]
+      #   ]
+      # ))
+
+      # t([[3, 1, 7], [2, 5, 4]], names: [:x, :y])
+      # |> Nx.argsort(axis: :y)
+      # |> assert_equal(t(
+      #   [
+      #     [1, 0, 2],
+      #     [0, 2, 1]
+      #   ]
+      # ))
+
+      # t([[3, 1, 7], [2, 5, 4]], names: [:x, :y])
+      # |> Nx.argsort(axis: :y, direction: :asc, type: :u32)
+      # |> assert_equal(t(
+      #   [
+      #     [1, 0, 2],
+      #     [0, 2, 1]
+      #   ]
+      # ))
+    end
+
     if Candlex.Backend.cuda_available?() do
       test "different devices" do
         t([1, 2, 3], backend: {Candlex.Backend, device: :cpu})

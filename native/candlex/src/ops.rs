@@ -456,3 +456,35 @@ custom_binary_bool_op!(
     },
     (U8, U32, I64, F32, F64)
 );
+
+
+pub(crate) struct Argsort;
+
+impl CustomOp1 for Argsort {
+    fn name(&self) -> &'static str {
+        "argsort"
+    }
+
+    fn cpu_fwd(
+        &self,
+        storage: &CpuStorage,
+        layout: &Layout,
+    ) -> Result<(CpuStorage, Shape), candle_core::Error> {
+        if layout.shape().rank() != 1 {
+            candle_core::bail!(
+                "input should have a single dimension, got {:?}",
+                layout.shape()
+            )
+        }
+        let slice = storage.as_slice::<f32>()?;
+        let src = match layout.contiguous_offsets() {
+            None => candle_core::bail!("input has to be contiguous"),
+            Some((o1, o2)) => &slice[o1..o2],
+        };
+        let mut dst = (0..src.len() as i64).collect::<Vec<i64>>();
+        dst.sort_by(|&i, &j| src[i as usize].total_cmp(&src[j as usize]));
+        let storage = candle_core::WithDType::to_cpu_storage_owned(dst);
+
+        Ok((storage, layout.shape().clone()))
+    }
+}
