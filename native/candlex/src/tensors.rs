@@ -307,8 +307,13 @@ pub fn slice_assign(
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
-pub fn pad_with_zeros(t: ExTensor, left: usize, right: usize) -> Result<ExTensor, CandlexError> {
-    Ok(ExTensor::new(t.pad_with_zeros(0, left, right)?))
+pub fn pad_with_zeros(
+    t: ExTensor,
+    dim: usize,
+    left: usize,
+    right: usize,
+) -> Result<ExTensor, CandlexError> {
+    Ok(ExTensor::new(t.pad_with_zeros(dim, left, right)?))
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
