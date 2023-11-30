@@ -457,7 +457,6 @@ custom_binary_bool_op!(
     (U8, U32, I64, F32, F64)
 );
 
-
 pub(crate) struct Argsort;
 
 impl CustomOp1 for Argsort {
