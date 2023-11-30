@@ -470,6 +470,18 @@ defmodule Candlex.Backend do
   # N-dim
 
   @impl true
+  def argsort(%T{} = out, %T{shape: {_}} = tensor, opts) do
+    0 = opts[:axis]
+    :asc = opts[:direction]
+
+    tensor
+    |> from_nx()
+    |> Native.argsort()
+    |> unwrap!()
+    |> to_nx(out)
+  end
+
+  @impl true
   def concatenate(%T{} = out, tensors, axis) do
     tensors
     |> maybe_upcast()
@@ -919,7 +931,6 @@ defmodule Candlex.Backend do
   end
 
   for op <- [
-        :argsort,
         :eigh,
         :fft,
         :ifft,
