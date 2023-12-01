@@ -499,9 +499,15 @@ defmodule Candlex.Backend do
         s -> raise("unsupported strides #{inspect(s)}")
       end
 
+    [{0, 0}, {0, 0}, {px_left, px_right}, {py_left, py_right}] = opts[:padding]
+
     tensor
     |> from_nx()
     |> Native.to_type(to_candle_dtype(out_type))
+    |> unwrap!()
+    |> Native.pad_with_same(2, px_left, px_right)
+    |> unwrap!()
+    |> Native.pad_with_same(3, py_left, py_right)
     |> unwrap!()
     |> Native.max_pool2d({dx, dy}, strides)
     |> unwrap!()
