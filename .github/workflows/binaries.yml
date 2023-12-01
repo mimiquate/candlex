@@ -17,7 +17,7 @@ on:
 env:
   PROJECT_NAME: "candlex"
   PROJECT_DIR: "native/candlex"
-  PROJECT_VERSION: "0.1.6"
+  PROJECT_VERSION: "0.1.7"
   NIF_VERSION: "2.16"
 
 jobs:
