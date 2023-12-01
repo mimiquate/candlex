@@ -1685,6 +1685,25 @@ defmodule CandlexTest do
       )
 
       Nx.iota({2, 1, 4, 4})
+      |> Nx.window_max({1, 1, 2, 2}, strides: [1, 1, 2, 1], padding: :same)
+      |> assert_equal(
+        t([
+          [
+            [
+              [5, 6, 7, 7],
+              [13, 14, 15, 15]
+            ]
+          ],
+          [
+            [
+              [21, 22, 23, 23],
+              [29, 30, 31, 31]
+            ]
+          ]
+        ])
+      )
+
+      Nx.iota({2, 1, 4, 4})
       |> Nx.window_max({1, 1, 2, 2}, strides: [1, 1, 1, 2])
       |> assert_equal(
         t([
@@ -1706,7 +1725,49 @@ defmodule CandlexTest do
       )
 
       Nx.iota({2, 1, 4, 4})
+      |> Nx.window_max({1, 1, 2, 2}, strides: [1, 1, 1, 2], padding: :same)
+      |> assert_equal(
+        t([
+          [
+            [
+              [5, 7],
+              [9, 11],
+              [13, 15],
+              [13, 15]
+            ]
+          ],
+          [
+            [
+              [21, 23],
+              [25, 27],
+              [29, 31],
+              [29, 31]
+            ]
+          ]
+        ])
+      )
+
+      Nx.iota({2, 1, 4, 4})
       |> Nx.window_max({1, 1, 2, 1}, strides: [1, 1, 2, 2])
+      |> assert_equal(
+        t([
+          [
+            [
+              [4, 6],
+              [12, 14]
+            ]
+          ],
+          [
+            [
+              [20, 22],
+              [28, 30]
+            ]
+          ]
+        ])
+      )
+
+      Nx.iota({2, 1, 4, 4})
+      |> Nx.window_max({1, 1, 2, 1}, strides: [1, 1, 2, 2], padding: :same)
       |> assert_equal(
         t([
           [
@@ -1739,6 +1800,29 @@ defmodule CandlexTest do
             [
               [20, 21, 22, 23],
               [24, 25, 26, 27],
+              [28, 29, 30, 31]
+            ]
+          ]
+        ])
+      )
+
+      Nx.iota({2, 1, 4, 4})
+      |> Nx.window_max({1, 1, 2, 1}, padding: :same)
+      |> assert_equal(
+        t([
+          [
+            [
+              [4, 5, 6, 7],
+              [8, 9, 10, 11],
+              [12, 13, 14, 15],
+              [12, 13, 14, 15]
+            ]
+          ],
+          [
+            [
+              [20, 21, 22, 23],
+              [24, 25, 26, 27],
+              [28, 29, 30, 31],
               [28, 29, 30, 31]
             ]
           ]
