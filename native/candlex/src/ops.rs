@@ -457,7 +457,13 @@ custom_binary_bool_op!(
     (U8, U32, I64, F32, F64)
 );
 
-pub(crate) struct Argsort;
+pub(crate) struct Argsort(bool);
+
+impl Argsort {
+    pub fn new(asc: bool) -> Self {
+        Self(asc)
+    }
+}
 
 impl CustomOp1 for Argsort {
     fn name(&self) -> &'static str {
@@ -481,7 +487,13 @@ impl CustomOp1 for Argsort {
             Some((o1, o2)) => &slice[o1..o2],
         };
         let mut dst = (0..src.len() as i64).collect::<Vec<i64>>();
-        dst.sort_by(|&i, &j| src[i as usize].total_cmp(&src[j as usize]));
+
+        if self.0 {
+            dst.sort_by(|&i, &j| src[i as usize].total_cmp(&src[j as usize]));
+        } else {
+            dst.sort_by(|&i, &j| src[j as usize].total_cmp(&src[i as usize]));
+        }
+
         let storage = candle_core::WithDType::to_cpu_storage_owned(dst);
 
         Ok((storage, layout.shape().clone()))
