@@ -2773,6 +2773,10 @@ defmodule CandlexTest do
       |> Nx.argsort()
       |> assert_equal(t([3, 4, 5, 0, 1, 2]))
 
+      t([16.0, 23, 42, 4, 8, 15])
+      |> Nx.argsort(direction: :desc)
+      |> assert_equal(t([2, 1, 0, 5, 4, 3]))
+
       # t([[3, 1, 7], [2, 5, 4]], names: [:x, :y])
       # |> Nx.argsort(axis: :x)
       # |> assert_equal(t(
@@ -2788,6 +2792,15 @@ defmodule CandlexTest do
         t([
           [1, 0, 2],
           [0, 2, 1]
+        ])
+      )
+
+      t([[3.0, 1, 7], [2, 5, 4]], names: [:x, :y])
+      |> Nx.argsort(axis: :y, direction: :desc)
+      |> assert_equal(
+        t([
+          [2, 0, 1],
+          [1, 2, 0]
         ])
       )
 

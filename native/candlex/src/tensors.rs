@@ -506,7 +506,6 @@ unary_nif!(tanh);
 
 custom_unary_nif!(acos, Acos);
 custom_unary_nif!(acosh, Acosh);
-custom_unary_nif!(argsort, Argsort);
 custom_unary_nif!(asin, Asin);
 custom_unary_nif!(asinh, Asinh);
 custom_unary_nif!(atan, Atan);
@@ -524,6 +523,11 @@ custom_unary_nif!(sigmoid, Sigmoid);
 custom_unary_nif!(sign, Sign);
 custom_unary_nif!(sinh, Sinh);
 custom_unary_nif!(tan, Tan);
+
+#[rustler::nif(schedule = "DirtyCpu")]
+pub fn argsort(ex_tensor: ExTensor, asc: bool) -> Result<ExTensor, CandlexError> {
+    Ok(ExTensor::new(ex_tensor.apply_op1_no_bwd(&Argsort::new(asc))?))
+}
 
 binary_nif!(add, broadcast_add);
 binary_nif!(subtract, broadcast_sub);

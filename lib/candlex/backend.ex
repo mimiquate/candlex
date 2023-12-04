@@ -472,18 +472,16 @@ defmodule Candlex.Backend do
   @impl true
   def argsort(%T{} = out, %T{shape: {_}} = tensor, opts) do
     0 = opts[:axis]
-    :asc = opts[:direction]
 
     tensor
     |> from_nx()
-    |> Native.argsort()
+    |> Native.argsort(opts[:direction] != :desc)
     |> unwrap!()
     |> to_nx(out)
   end
 
   def argsort(%T{} = out, %T{shape: {n, _}} = tensor, opts) do
     1 = opts[:axis]
-    :asc = opts[:direction]
 
     tensor
     |> from_nx()
@@ -493,7 +491,7 @@ defmodule Candlex.Backend do
       chunk
       |> Native.squeeze(0)
       |> unwrap!()
-      |> Native.argsort()
+      |> Native.argsort(opts[:direction] != :desc)
       |> unwrap!()
     end)
     |> Native.stack(0)
