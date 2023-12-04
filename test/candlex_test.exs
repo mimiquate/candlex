@@ -2784,12 +2784,12 @@ defmodule CandlexTest do
 
       t([[3.0, 1, 7], [2, 5, 4]], names: [:x, :y])
       |> Nx.argsort(axis: :y)
-      |> assert_equal(t(
-        [
+      |> assert_equal(
+        t([
           [1, 0, 2],
           [0, 2, 1]
-        ]
-      ))
+        ])
+      )
 
       # t([[3, 1, 7], [2, 5, 4]], names: [:x, :y])
       # |> Nx.argsort(axis: :y, direction: :asc, type: :u32)
