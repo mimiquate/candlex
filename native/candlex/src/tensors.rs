@@ -526,7 +526,9 @@ custom_unary_nif!(tan, Tan);
 
 #[rustler::nif(schedule = "DirtyCpu")]
 pub fn argsort(ex_tensor: ExTensor, asc: bool) -> Result<ExTensor, CandlexError> {
-    Ok(ExTensor::new(ex_tensor.apply_op1_no_bwd(&Argsort::new(asc))?))
+    Ok(ExTensor::new(
+        ex_tensor.apply_op1_no_bwd(&Argsort::new(asc))?,
+    ))
 }
 
 binary_nif!(add, broadcast_add);
