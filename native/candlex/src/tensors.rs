@@ -361,6 +361,15 @@ pub fn concatenate(ex_tensors: Vec<ExTensor>, dim: usize) -> Result<ExTensor, Ca
     Ok(ExTensor::new(Tensor::cat(&tensors[..], dim)?))
 }
 
+#[rustler::nif(schedule = "DirtyCpu")]
+pub fn stack(ex_tensors: Vec<ExTensor>, dim: usize) -> Result<ExTensor, CandlexError> {
+    let tensors = ex_tensors
+        .iter()
+        .map(|t| t.deref())
+        .collect::<Vec<&Tensor>>();
+    Ok(ExTensor::new(Tensor::stack(&tensors[..], dim)?))
+}
+
 #[derive(NifStruct)]
 #[module = "Candlex.Native.ConvOpts"]
 pub struct ConvOpts {

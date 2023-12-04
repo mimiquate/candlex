@@ -481,6 +481,26 @@ defmodule Candlex.Backend do
     |> to_nx(out)
   end
 
+  def argsort(%T{} = out, %T{shape: {n, _}} = tensor, opts) do
+    1 = opts[:axis]
+    :asc = opts[:direction]
+
+    tensor
+    |> from_nx()
+    |> Native.chunk(n)
+    |> unwrap!()
+    |> Enum.map(fn chunk ->
+      chunk
+      |> Native.squeeze(0)
+      |> unwrap!()
+      |> Native.argsort()
+      |> unwrap!()
+    end)
+    |> Native.stack(0)
+    |> unwrap!()
+    |> to_nx(out)
+  end
+
   @impl true
   def concatenate(%T{} = out, tensors, axis) do
     tensors

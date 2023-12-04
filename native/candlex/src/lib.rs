@@ -69,6 +69,7 @@ rustler::init! {
         tensors::broadcast_to,
         tensors::reshape,
         tensors::concatenate,
+        tensors::stack,
         tensors::conv1d,
         tensors::conv2d,
         tensors::permute,
