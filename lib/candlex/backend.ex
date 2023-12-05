@@ -600,20 +600,12 @@ defmodule Candlex.Backend do
   end
 
   @impl true
-  def dot(
-        %T{} = out,
-        %T{shape: left_shape} = left,
-        [left_axis],
-        [],
-        %T{shape: {_}} = right,
-        [0],
-        []
-      )
-      when tuple_size(left_shape) >= 1 and left_axis == tuple_size(left_shape) - 1 do
-    {left, right} = maybe_upcast(left, right)
+  def dot(%T{shape: out_shape} = out, left, left_axes, [], right, right_axes, []) do
+    # {left, right} = maybe_upcast(left, right)
 
-    from_nx(left)
-    |> Native.dot(from_nx(right))
+    do_dot(left, left_axes, right, right_axes)
+    # Reinstate 1-D axes removed by candle
+    |> Native.reshape(out_shape)
     |> unwrap!()
     |> to_nx(out)
   end
@@ -622,84 +614,23 @@ defmodule Candlex.Backend do
         %T{shape: out_shape} = out,
         %T{shape: left_shape} = left,
         [left_axis],
-        [],
+        [0],
         %T{shape: right_shape} = right,
         [right_axis],
-        []
-      )
-      when tuple_size(left_shape) >= 2 and tuple_size(right_shape) >= 2 and
-             left_axis == tuple_size(left_shape) - 1 and right_axis == tuple_size(right_shape) - 2 and
-             elem(left_shape, left_axis) == elem(right_shape, right_axis) do
-    {left, right} = maybe_upcast(left, right)
-
-    from_nx(left)
-    |> Native.matmul(from_nx(right))
-    |> unwrap!()
-    # Reinstate 1-D axes removed by candle
-    |> Native.reshape(out_shape)
-    |> unwrap!()
-    |> to_nx(out)
-  end
-
-  def dot(
-        out,
-        %T{shape: {_, _}} = left,
-        [0],
-        left_batched_axes,
-        right,
-        right_axes,
-        right_batched_axes
-      ) do
-    dot(
-      out,
-      left |> Nx.transpose(axes: [1, 0]),
-      [1],
-      left_batched_axes,
-      right,
-      right_axes,
-      right_batched_axes
-    )
-  end
-
-  def dot(
-        out,
-        left,
-        left_axes,
-        left_batched_axes,
-        %T{shape: {_, _}} = right,
-        [1],
-        right_batched_axes
-      ) do
-    dot(
-      out,
-      left,
-      left_axes,
-      left_batched_axes,
-      right |> Nx.transpose(axes: [1, 0]),
-      [0],
-      right_batched_axes
-    )
-  end
-
-  def dot(
-        %T{shape: {n, _, _} = out_shape} = out,
-        %T{shape: {n, _, _}} = left,
-        [2],
-        [0],
-        %T{shape: {n, _, _}} = right,
-        [2],
         [0]
-      ) do
+      )
+      when elem(left_shape, 0) == elem(right_shape, 0) do
     Enum.zip(
-      left |> from_nx() |> Native.chunk(n) |> unwrap!(),
-      right |> from_nx() |> Native.chunk(n) |> unwrap!()
+      left |> Nx.to_batched(1),
+      right |> Nx.to_batched(1)
     )
     |> Enum.map(fn {l, r} ->
-      Native.matmul(
-        l |> Native.squeeze(0) |> unwrap!(),
-        r |> Native.squeeze(0) |> unwrap!()
+      do_dot(
+        l |> Nx.squeeze(axes: [0]),
+        [left_axis - 1],
+        r |> Nx.squeeze(axes: [0]),
+        [right_axis - 1]
       )
-      |> unwrap!()
     end)
     |> Native.stack(0)
     |> unwrap!()
@@ -707,6 +638,65 @@ defmodule Candlex.Backend do
     |> Native.reshape(out_shape)
     |> unwrap!()
     |> to_nx(out)
+  end
+
+  defp do_dot(
+         %T{shape: left_shape} = left,
+         [left_axis],
+         %T{shape: {_}} = right,
+         [0]
+       )
+       when tuple_size(left_shape) >= 1 and left_axis == tuple_size(left_shape) - 1 do
+    {left, right} = maybe_upcast(left, right)
+
+    from_nx(left)
+    |> Native.dot(from_nx(right))
+    |> unwrap!()
+  end
+
+  defp do_dot(
+         %T{shape: left_shape} = left,
+         [left_axis],
+         %T{shape: right_shape} = right,
+         [right_axis]
+       )
+       when tuple_size(left_shape) >= 2 and tuple_size(right_shape) >= 2 and
+              left_axis == tuple_size(left_shape) - 1 and
+              right_axis == tuple_size(right_shape) - 2 and
+              elem(left_shape, left_axis) == elem(right_shape, right_axis) do
+    {left, right} = maybe_upcast(left, right)
+
+    from_nx(left)
+    |> Native.matmul(from_nx(right))
+    |> unwrap!()
+  end
+
+  defp do_dot(
+         %T{shape: {_, _}} = left,
+         [0],
+         right,
+         right_axes
+       ) do
+    do_dot(
+      left |> Nx.transpose(axes: [1, 0]),
+      [1],
+      right,
+      right_axes
+    )
+  end
+
+  defp do_dot(
+         left,
+         left_axes,
+         %T{shape: {_, _}} = right,
+         [1]
+       ) do
+    do_dot(
+      left,
+      left_axes,
+      right |> Nx.transpose(axes: [1, 0]),
+      [0]
+    )
   end
 
   @impl true
