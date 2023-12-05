@@ -654,34 +654,6 @@ defmodule CandlexTest do
         ])
       )
 
-      # t1
-      # |> Nx.dot([0, 1], [], t2, [0, 1], [])
-      # |> assert_equal(t(300))
-
-      # Nx.dot(
-      #   t(
-      #       [
-      #         [1.0]
-      #       ]
-      #   ),
-      #   [1],
-      #   [],
-      #   t(
-      #       [
-      #         [3]
-      #       ]
-      #   ),
-      #   [1],
-      #   []
-      # )
-      # |> assert_equal(
-      #   t(
-      #       [
-      #         [3]
-      #       ]
-      #   )
-      # )
-
       # Dot product between two batched tensors
       Nx.dot(
         t([
