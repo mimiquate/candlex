@@ -612,32 +612,53 @@ defmodule Candlex.Backend do
 
   def dot(
         %T{shape: out_shape} = out,
-        %T{shape: left_shape} = left,
-        [left_axis],
-        [0],
-        %T{shape: right_shape} = right,
-        [right_axis],
-        [0]
-      )
-      when elem(left_shape, 0) == elem(right_shape, 0) do
+        left,
+        left_axes,
+        [_ | _] = batched_axes,
+        right,
+        right_axes,
+        batched_axes
+      ) do
+    do_batched_dot(
+      left,
+      left_axes,
+      right,
+      right_axes,
+      batched_axes
+    )
+    # Reinstate 1-D axes removed by candle
+    |> Native.reshape(out_shape)
+    |> unwrap!()
+    |> to_nx(out)
+  end
+
+  defp do_batched_dot(
+         %T{shape: left_shape} = left,
+         [left_axis],
+         %T{shape: right_shape} = right,
+         [right_axis],
+         [0 | batched_axes_rest]
+       )
+       when elem(left_shape, 0) == elem(right_shape, 0) do
     Enum.zip(
       left |> Nx.to_batched(1),
       right |> Nx.to_batched(1)
     )
     |> Enum.map(fn {l, r} ->
-      do_dot(
+      do_batched_dot(
         l |> Nx.squeeze(axes: [0]),
         [left_axis - 1],
         r |> Nx.squeeze(axes: [0]),
-        [right_axis - 1]
+        [right_axis - 1],
+        batched_axes_rest |> Enum.map(&(&1 - 1))
       )
     end)
     |> Native.stack(0)
     |> unwrap!()
-    # Reinstate 1-D axes removed by candle
-    |> Native.reshape(out_shape)
-    |> unwrap!()
-    |> to_nx(out)
+  end
+
+  defp do_batched_dot(left, left_axes, right, right_axes, []) do
+    do_dot(left, left_axes, right, right_axes)
   end
 
   defp do_dot(
