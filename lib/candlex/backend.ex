@@ -681,6 +681,34 @@ defmodule Candlex.Backend do
     )
   end
 
+  def dot(
+        %T{shape: {n, _, _} = out_shape} = out,
+        %T{shape: {n, _, _}} = left,
+        [2],
+        [0],
+        %T{shape: {n, _, _}} = right,
+        [2],
+        [0]
+      ) do
+    Enum.zip(
+      left |> from_nx() |> Native.chunk(n) |> unwrap!(),
+      right |> from_nx() |> Native.chunk(n) |> unwrap!()
+    )
+    |> Enum.map(fn {l, r} ->
+      Native.matmul(
+        l |> Native.squeeze(0) |> unwrap!(),
+        r |> Native.squeeze(0) |> unwrap!()
+      )
+      |> unwrap!()
+    end)
+    |> Native.stack(0)
+    |> unwrap!()
+    # Reinstate 1-D axes removed by candle
+    |> Native.reshape(out_shape)
+    |> unwrap!()
+    |> to_nx(out)
+  end
+
   @impl true
   def reverse(%T{} = out, %T{} = tensor, axes) do
     tensor
