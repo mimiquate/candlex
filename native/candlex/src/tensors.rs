@@ -424,6 +424,19 @@ pub fn conv2d(
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
+pub fn sum_pool2d(
+    tensor: ExTensor,
+    dims: (usize, usize),
+    strides: (usize, usize),
+) -> Result<ExTensor, CandlexError> {
+    Ok(ExTensor::new(
+        tensor
+            .avg_pool2d_with_stride(dims, strides)?
+            .broadcast_mul(&Tensor::new((dims.0 * dims.1) as f32, tensor.device())?)?,
+    ))
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
 pub fn max_pool2d(
     tensor: ExTensor,
     dims: (usize, usize),
