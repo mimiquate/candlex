@@ -39,6 +39,7 @@ defmodule Candlex.MixProject do
       {:rustler, "~> 0.29", optional: true},
 
       # Dev
+      {:bumblebee, "~> 0.4", only: :dev, runtime: false},
       {:ex_doc, "~> 0.30.9", only: :dev, runtime: false}
     ]
   end
