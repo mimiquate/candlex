@@ -58,6 +58,7 @@ defmodule Candlex.Native do
   def clamp(_tensor, _min, _max), do: error()
   def reverse(_tensor, _axes), do: error()
   def argsort(_tensor, _asc), do: error()
+  def sum_pool2d(_tensor, _dims, _strides), do: error()
   def max_pool2d(_tensor, _dims, _strides), do: error()
 
   for op <- [

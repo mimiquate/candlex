@@ -809,6 +809,25 @@ defmodule Candlex.Backend do
     |> from_binary(to_binary(tensor), [])
   end
 
+  # Window
+
+  @impl true
+  def window_sum(%T{} = out, %T{} = tensor, {1, 1, dx, dy}, opts) do
+    [1, 1, 1, 1] = opts[:window_dilations]
+    [1, 1, sx, sy] = opts[:strides]
+    [{0, 0}, {0, 0}, {px_left, px_right}, {py_left, py_right}] = opts[:padding]
+
+    tensor
+    |> from_nx()
+    |> Native.pad_with_same(2, px_left, px_right)
+    |> unwrap!()
+    |> Native.pad_with_same(3, py_left, py_right)
+    |> unwrap!()
+    |> Native.sum_pool2d({dx, dy}, {sx, sy})
+    |> unwrap!()
+    |> to_nx(out)
+  end
+
   # Inspect
 
   @impl true
@@ -1023,8 +1042,7 @@ defmodule Candlex.Backend do
         :random_uniform,
         :triangular_solve,
         :window_min,
-        :window_product,
-        :window_sum
+        :window_product
       ] do
     @impl true
     def unquote(op)(_out, _tensor, _, _) do
