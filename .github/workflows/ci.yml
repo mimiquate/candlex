@@ -35,4 +35,5 @@ jobs:
         if: ${{ matrix.lint }}
       - run: mix test
       - run: mix run examples/linear_regression.exs
+      - run: mix run examples/image_classification.exs
       - run: mix run examples/text_classification.exs
