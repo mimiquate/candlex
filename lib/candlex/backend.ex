@@ -682,42 +682,33 @@ defmodule Candlex.Backend do
          [right_axis]
        )
        when tuple_size(left_shape) >= 2 and tuple_size(right_shape) >= 2 and
-              left_axis == tuple_size(left_shape) - 1 and
-              right_axis == tuple_size(right_shape) - 2 and
               elem(left_shape, left_axis) == elem(right_shape, right_axis) do
     {left, right} = maybe_upcast(left, right)
 
-    from_nx(left)
-    |> Native.matmul(from_nx(right))
+    left
+    |> moved_axis(left_axis, tuple_size(left_shape) - 1)
+    |> from_nx()
+    |> Native.matmul(
+      right
+      |> moved_axis(right_axis, tuple_size(right_shape) - 2)
+      |> from_nx()
+    )
     |> unwrap!()
   end
 
-  defp do_dot(
-         %T{shape: {_, _}} = left,
-         [0],
-         right,
-         right_axes
-       ) do
-    do_dot(
-      left |> Nx.transpose(axes: [1, 0]),
-      [1],
-      right,
-      right_axes
-    )
+  defp moved_axis(x, axis, axis) do
+    x
   end
 
-  defp do_dot(
-         left,
-         left_axes,
-         %T{shape: {_, _}} = right,
-         [1]
-       ) do
-    do_dot(
-      left,
-      left_axes,
-      right |> Nx.transpose(axes: [1, 0]),
-      [0]
-    )
+  defp moved_axis(%T{} = t, axis, target_position) do
+    t
+    |> Nx.transpose(axes: moved_axis(Nx.axes(t), axis, target_position))
+  end
+
+  defp moved_axis([_ | _] = axes, axis, target_position) do
+    axes
+    |> List.delete_at(axis)
+    |> List.insert_at(target_position, axis)
   end
 
   @impl true
