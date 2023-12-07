@@ -721,11 +721,8 @@ defmodule Candlex.Backend do
   end
 
   defp moved_axis([_ | _] = axes, axis, target_position) do
-    {axis, tmp_axes} =
-      axes
-      |> List.pop_at(axis)
-
-    tmp_axes
+    axes
+    |> List.delete_at(axis)
     |> List.insert_at(target_position, axis)
   end
 
