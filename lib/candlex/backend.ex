@@ -714,12 +714,13 @@ defmodule Candlex.Backend do
   defp moved_axis(x, axis, axis) do
     x
   end
+
   defp moved_axis(%T{} = t, axis, target_position) do
     t
     |> Nx.transpose(axes: moved_axis(Nx.axes(t), axis, target_position))
   end
 
-  defp moved_axis([_|_] = axes, axis, target_position) do
+  defp moved_axis([_ | _] = axes, axis, target_position) do
     {axis, tmp_axes} =
       axes
       |> List.pop_at(axis)
