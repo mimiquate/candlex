@@ -711,8 +711,8 @@ defmodule Candlex.Backend do
     )
   end
 
-  defp moved_axis(%T{} = t, axis, axis) do
-    t
+  defp moved_axis(x, axis, axis) do
+    x
   end
   defp moved_axis(%T{} = t, axis, target_position) do
     t
