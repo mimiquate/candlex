@@ -682,33 +682,18 @@ defmodule Candlex.Backend do
          [right_axis]
        )
        when tuple_size(left_shape) >= 2 and tuple_size(right_shape) >= 2 and
-              left_axis == tuple_size(left_shape) - 1 and
-              right_axis == tuple_size(right_shape) - 2 and
               elem(left_shape, left_axis) == elem(right_shape, right_axis) do
     {left, right} = maybe_upcast(left, right)
 
-    from_nx(left)
-    |> Native.matmul(from_nx(right))
-    |> unwrap!()
-  end
-
-  defp do_dot(
-         %T{shape: left_shape} = left,
-         [left_axis],
-         %T{shape: right_shape} = right,
-         [right_axis]
-       )
-       when tuple_size(left_shape) >= 2 and tuple_size(right_shape) >= 2 and
-              elem(left_shape, left_axis) == elem(right_shape, right_axis) do
-    left_axis_target_position = tuple_size(left_shape) - 1
-    right_axis_target_position = tuple_size(right_shape) - 2
-
-    do_dot(
-      moved_axis(left, left_axis, left_axis_target_position),
-      [left_axis_target_position],
-      moved_axis(right, right_axis, right_axis_target_position),
-      [right_axis_target_position]
+    left
+    |> moved_axis(left_axis, tuple_size(left_shape) - 1)
+    |> from_nx()
+    |> Native.matmul(
+      right
+      |> moved_axis(right_axis, tuple_size(right_shape) - 2)
+      |> from_nx()
     )
+    |> unwrap!()
   end
 
   defp moved_axis(x, axis, axis) do
