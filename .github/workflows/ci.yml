@@ -8,18 +8,22 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CANDLEX_NIF_BUILD: true
+      MIX_EXS: ${{matrix.mix_exs}}
     strategy:
       fail-fast: false
       matrix:
         include:
           - elixir_version: 1.16.0-rc.1
             otp_version: '26.2'
+            mix_exs: "mixfiles/nx06.exs"
             lint: true
           - elixir_version: 1.15.7
             otp_version: '26.2'
+            mix_exs: "mixfiles/nx06.exs"
             lint: true
           - elixir_version: 1.14.5
             otp_version: 25.3.2.7
+            mix_exs: "mixfiles/nx05.exs"
     steps:
       - uses: actions/checkout@v4
       - run: cargo fmt --check --manifest-path=native/candlex/Cargo.toml
