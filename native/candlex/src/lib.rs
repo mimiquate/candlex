@@ -120,6 +120,7 @@ rustler::init! {
         tensors::to_device,
         tensors::sum_pool2d,
         tensors::max_pool2d,
+        tensors::contiguous,
         devices::is_cuda_available
     ],
     load = load
