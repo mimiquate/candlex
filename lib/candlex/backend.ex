@@ -510,29 +510,6 @@ defmodule Candlex.Backend do
   end
 
   @impl true
-  def window_max(%T{type: out_type} = out, tensor, {1, 1, dx, dy} = _window_dimensions, opts) do
-    strides =
-      case opts[:strides] do
-        [1, 1, sx, sy] -> {sx, sy}
-        s -> raise("unsupported strides #{inspect(s)}")
-      end
-
-    [{0, 0}, {0, 0}, {px_left, px_right}, {py_left, py_right}] = opts[:padding]
-
-    tensor
-    |> from_nx()
-    |> Native.to_type(to_candle_dtype(out_type))
-    |> unwrap!()
-    |> Native.pad_with_same(2, px_left, px_right)
-    |> unwrap!()
-    |> Native.pad_with_same(3, py_left, py_right)
-    |> unwrap!()
-    |> Native.max_pool2d({dx, dy}, strides)
-    |> unwrap!()
-    |> to_nx(out)
-  end
-
-  @impl true
   def conv(%T{type: out_type} = out, %T{shape: shape} = tensor, %T{} = kernel, opts) do
     # TODO: Support more opts
     unsupported_option!(opts, :batch_group_size, 1)
@@ -801,6 +778,29 @@ defmodule Candlex.Backend do
   end
 
   # Window
+
+  @impl true
+  def window_max(%T{type: out_type} = out, tensor, {1, 1, dx, dy} = _window_dimensions, opts) do
+    strides =
+      case opts[:strides] do
+        [1, 1, sx, sy] -> {sx, sy}
+        s -> raise("unsupported strides #{inspect(s)}")
+      end
+
+    [{0, 0}, {0, 0}, {px_left, px_right}, {py_left, py_right}] = opts[:padding]
+
+    tensor
+    |> from_nx()
+    |> Native.to_type(to_candle_dtype(out_type))
+    |> unwrap!()
+    |> Native.pad_with_same(2, px_left, px_right)
+    |> unwrap!()
+    |> Native.pad_with_same(3, py_left, py_right)
+    |> unwrap!()
+    |> Native.max_pool2d({dx, dy}, strides)
+    |> unwrap!()
+    |> to_nx(out)
+  end
 
   @impl true
   def window_sum(%T{} = out, %T{} = tensor, {1, 1, dx, dy}, opts) do
