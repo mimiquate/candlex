@@ -693,31 +693,39 @@ defmodule Candlex.Backend do
   end
 
   defp do_dot(
-         %T{shape: {_, _}} = left,
-         [0],
-         right,
-         right_axes
-       ) do
+         %T{shape: left_shape} = left,
+         [left_axis],
+         %T{shape: right_shape} = right,
+         [right_axis]
+       )
+       when tuple_size(left_shape) >= 2 and tuple_size(right_shape) >= 2 and
+              elem(left_shape, left_axis) == elem(right_shape, right_axis) do
+    left_axis_target_position = tuple_size(left_shape) - 1
+    right_axis_target_position = tuple_size(right_shape) - 2
+
     do_dot(
-      left |> Nx.transpose(axes: [1, 0]),
-      [1],
-      right,
-      right_axes
+      moved_axis(left, left_axis, left_axis_target_position),
+      [left_axis_target_position],
+      moved_axis(right, right_axis, right_axis_target_position),
+      [right_axis_target_position]
     )
   end
 
-  defp do_dot(
-         left,
-         left_axes,
-         %T{shape: {_, _}} = right,
-         [1]
-       ) do
-    do_dot(
-      left,
-      left_axes,
-      right |> Nx.transpose(axes: [1, 0]),
-      [0]
-    )
+  defp moved_axis(%T{} = t, axis, axis) do
+    t
+  end
+  defp moved_axis(%T{} = t, axis, target_position) do
+    t
+    |> Nx.transpose(axes: moved_axis(Nx.axes(t), axis, target_position))
+  end
+
+  defp moved_axis([_|_] = axes, axis, target_position) do
+    {axis, tmp_axes} =
+      axes
+      |> List.pop_at(axis)
+
+    tmp_axes
+    |> List.insert_at(target_position, axis)
   end
 
   @impl true
