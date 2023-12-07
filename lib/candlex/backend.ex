@@ -680,12 +680,21 @@ defmodule Candlex.Backend do
   defp moved_axis(%T{} = t, axis, target_position) do
     t
     |> Nx.transpose(axes: moved_axis(Nx.axes(t), axis, target_position))
+    |> contiguous()
   end
 
   defp moved_axis([_ | _] = axes, axis, target_position) do
     axes
     |> List.delete_at(axis)
     |> List.insert_at(target_position, axis)
+  end
+
+  defp contiguous(t) do
+    t
+    |> from_nx()
+    |> Native.contiguous()
+    |> unwrap!()
+    |> to_nx(t)
   end
 
   @impl true

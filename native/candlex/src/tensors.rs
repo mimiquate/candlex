@@ -507,6 +507,7 @@ macro_rules! custom_binary_nif {
 unary_nif!(negate, neg);
 unary_nif!(abs);
 unary_nif!(ceil);
+unary_nif!(contiguous);
 unary_nif!(cos);
 unary_nif!(erf);
 unary_nif!(exp);

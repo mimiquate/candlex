@@ -32,6 +32,7 @@ defmodule Candlex.Native do
   def from_binary(_binary, _dtype, _shape, _device), do: error()
   def to_binary(_tensor), do: error()
   def all(_tensor), do: error()
+  def contiguous(_tensor), do: error()
   def all_within_dims(_tensor, _dims, _keep_dims), do: error()
   def any(_tensor), do: error()
   def any_within_dims(_tensor, _dims, _keep_dims), do: error()
