@@ -4,7 +4,7 @@
 [![Hex.pm](https://img.shields.io/hexpm/v/candlex.svg)](https://hex.pm/packages/candlex)
 [![Docs](https://img.shields.io/badge/docs-gray.svg)](https://hexdocs.pm/candlex)
 
-An `Nx` [backend](https://hexdocs.pm/nx/Nx.html#module-backends) for [candle](https://huggingface.github.io/candle) machine learning minimalist framework
+An `Nx` [backend](https://hexdocs.pm/nx/Nx.html#module-backends) for candle ([docs](https://huggingface.github.io/candle), [repo](https://github.com/huggingface/candle), [crate](https://crates.io/crates/candle-core)) machine learning framework
 
 ## Installation
 
