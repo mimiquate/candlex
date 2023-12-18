@@ -112,16 +112,16 @@ checksum = "14c189c53d098945499cdfa7ecc63567cf3886b3332b312a5b4585d8d3a6a610"
 [[package]]
 name = "candle-core"
 version = "0.3.1"
-source = "git+https://github.com/huggingface/candle#9bd94c1ffa0ccfd2bbc9526569b8b8a2a3812027"
+source = "git+https://github.com/huggingface/candle?branch=metal4#03641293eeb1dd0ff3d5a93e85c7f9eb289704e4"
 dependencies = [
  "byteorder",
  "candle-kernels",
- "candle-metal",
  "candle-metal-kernels",
  "cudarc",
  "gemm",
  "half",
  "memmap2",
+ "metal",
  "num-traits",
  "num_cpus",
  "rand",
@@ -136,7 +136,7 @@ dependencies = [
 [[package]]
 name = "candle-kernels"
 version = "0.3.1"
-source = "git+https://github.com/huggingface/candle#9bd94c1ffa0ccfd2bbc9526569b8b8a2a3812027"
+source = "git+https://github.com/huggingface/candle?branch=metal4#03641293eeb1dd0ff3d5a93e85c7f9eb289704e4"
 dependencies = [
  "anyhow",
  "glob",
@@ -144,27 +144,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "candle-metal"
-version = "0.27.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e697df3a971c0299102fed60943db63442c37cd9985fba7856266b5aa808b1b"
-dependencies = [
- "bitflags 2.4.1",
- "block",
- "core-graphics-types",
- "foreign-types",
- "half",
- "log",
- "objc",
- "paste",
-]
-
-[[package]]
 name = "candle-metal-kernels"
 version = "0.3.1"
-source = "git+https://github.com/huggingface/candle#c7e613ab5efd46934eddbc16f18aeea4dab4366a"
+source = "git+https://github.com/huggingface/candle?branch=metal4#03641293eeb1dd0ff3d5a93e85c7f9eb289704e4"
 dependencies = [
- "candle-metal",
+ "metal",
  "once_cell",
  "thiserror",
  "tracing",
@@ -563,6 +547,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5a634b1c61a95585bd15607c6ab0c4e5b226e695ff2800ba0cdccddf208c406c"
 dependencies = [
  "autocfg",
+]
+
+[[package]]
+name = "metal"
+version = "0.27.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c43f73953f8cbe511f021b58f18c3ce1c3d1ae13fe953293e13345bf83217f25"
+dependencies = [
+ "bitflags 2.4.1",
+ "block",
+ "core-graphics-types",
+ "foreign-types",
+ "log",
+ "objc",
+ "paste",
 ]
 
 [[package]]
