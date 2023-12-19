@@ -5,7 +5,9 @@ defmodule Candlex.MixProject do
 
   def project do
     Candlex.Project.project()
+    |> Keyword.put(:build_path, build_path())
     |> Keyword.put(:deps, new_deps())
+    |> Keyword.put(:deps_path, deps_path())
     |> Keyword.put(:lockfile, lockfile())
   end
 
@@ -31,7 +33,19 @@ defmodule Candlex.MixProject do
     ]
   end
 
+  defp build_path do
+    Path.join([__DIR__, "_build", file_name()])
+  end
+
+  defp deps_path do
+    Path.join([__DIR__, "deps", file_name()])
+  end
+
   defp lockfile do
-    Path.join(__DIR__, "#{Path.basename(__ENV__.file, ".exs")}.lock")
+    Path.join(__DIR__, "#{file_name()}.lock")
+  end
+
+  defp file_name do
+    Path.basename(__ENV__.file, ".exs")
   end
 end
