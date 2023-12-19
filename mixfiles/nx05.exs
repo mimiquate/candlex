@@ -6,7 +6,7 @@ defmodule Candlex.MixProject do
   def project do
     Candlex.Project.project()
     |> Keyword.put(:deps, new_deps())
-    |> Keyword.put(:lockfile, "mixfiles/nx05.lock")
+    |> Keyword.put(:lockfile, lockfile())
   end
 
   # Run "mix help compile.app" to learn about applications.
@@ -30,5 +30,9 @@ defmodule Candlex.MixProject do
       {:nx, "~> 0.5.0"},
       {:bumblebee, "~> 0.3.0"}
     ]
+  end
+
+  defp lockfile do
+    Path.join(__DIR__, "#{Path.basename(__ENV__.file, ".exs")}.lock")
   end
 end
