@@ -15,7 +15,7 @@ jobs:
         include:
           - elixir_version: 1.16.0-rc.1
             otp_version: '26.2'
-            mix_exs: "mixfiles/nx06.exs"
+            mix_exs: "mixfiles/nx-edge.exs"
             lint: true
           - elixir_version: 1.15.7
             otp_version: '26.2'
@@ -23,7 +23,7 @@ jobs:
             lint: true
           - elixir_version: 1.14.5
             otp_version: 25.3.2.7
-            mix_exs: "mixfiles/nx05.exs"
+            mix_exs: "mixfiles/nx06.exs"
     steps:
       - uses: actions/checkout@v4
       - run: cargo fmt --check --manifest-path=native/candlex/Cargo.toml

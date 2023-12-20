@@ -5,8 +5,7 @@ defmodule Candlex.MixProject do
 
   defp extra_deps do
     [
-      {:nx, "~> 0.5.0"},
-      {:bumblebee, "~> 0.3.0"}
+      {:nx, github: "elixir-nx/nx", sparse: "nx", override: true},
     ]
   end
 end
