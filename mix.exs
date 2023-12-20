@@ -1,4 +1,4 @@
-Code.compile_file("project.exs")
+Code.require_file("project.exs")
 
 defmodule Candlex.MixProject do
   use Mix.Project
