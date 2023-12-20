@@ -1202,8 +1202,10 @@ defmodule Candlex.Backend do
     cond do
       cuda_available?() ->
         @device_cuda
+
       metal_available?() ->
         @device_metal
+
       true ->
         @device_cpu
     end
