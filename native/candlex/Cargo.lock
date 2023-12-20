@@ -111,8 +111,8 @@ checksum = "14c189c53d098945499cdfa7ecc63567cf3886b3332b312a5b4585d8d3a6a610"
 
 [[package]]
 name = "candle-core"
-version = "0.3.1"
-source = "git+https://github.com/huggingface/candle?branch=metal4#03641293eeb1dd0ff3d5a93e85c7f9eb289704e4"
+version = "0.3.2"
+source = "git+https://github.com/huggingface/candle#9fc210fae8175a180dba8c28aa8e5975868a237c"
 dependencies = [
  "byteorder",
  "candle-kernels",
@@ -135,8 +135,8 @@ dependencies = [
 
 [[package]]
 name = "candle-kernels"
-version = "0.3.1"
-source = "git+https://github.com/huggingface/candle?branch=metal4#03641293eeb1dd0ff3d5a93e85c7f9eb289704e4"
+version = "0.3.2"
+source = "git+https://github.com/huggingface/candle#9fc210fae8175a180dba8c28aa8e5975868a237c"
 dependencies = [
  "anyhow",
  "glob",
@@ -145,8 +145,8 @@ dependencies = [
 
 [[package]]
 name = "candle-metal-kernels"
-version = "0.3.1"
-source = "git+https://github.com/huggingface/candle?branch=metal4#03641293eeb1dd0ff3d5a93e85c7f9eb289704e4"
+version = "0.3.2"
+source = "git+https://github.com/huggingface/candle#9fc210fae8175a180dba8c28aa8e5975868a237c"
 dependencies = [
  "metal",
  "once_cell",
