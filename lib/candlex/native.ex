@@ -139,6 +139,7 @@ defmodule Candlex.Native do
   end
 
   def is_cuda_available(), do: error()
+  def is_metal_available(), do: error()
   def to_device(_tensor, _device), do: error()
 
   defp error(), do: :erlang.nif_error(:nif_not_loaded)

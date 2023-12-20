@@ -620,6 +620,7 @@ fn vec_to_tuple(env: Env, vec: Vec<usize>) -> Result<Term, rustler::Error> {
 }
 
 static CUDA_DEVICE: std::sync::Mutex<Option<Device>> = std::sync::Mutex::new(None);
+static METAL_DEVICE: std::sync::Mutex<Option<Device>> = std::sync::Mutex::new(None);
 
 fn device_from_atom(atom: Atom) -> Result<Device, CandlexError> {
     if atom == atoms::cpu() {
@@ -634,6 +635,17 @@ fn device_from_atom(atom: Atom) -> Result<Device, CandlexError> {
             *cuda_device = Some(new_cuda_device.clone());
 
             Ok(new_cuda_device)
+        }
+    } else if atom == atoms::metal() {
+        let mut metal_device = METAL_DEVICE.lock().unwrap();
+
+        if let Some(device) = metal_device.as_ref() {
+            Ok(device.clone())
+        } else {
+            let new_metal_device = Device::new_metal(0)?;
+            *metal_device = Some(new_metal_device.clone());
+
+            Ok(new_metal_device)
         }
     } else {
         Err(CandlexError::Other(format!(

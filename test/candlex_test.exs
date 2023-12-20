@@ -2974,6 +2974,18 @@ defmodule CandlexTest do
       end
     end
 
+    if Candlex.Backend.metal_available?() do
+      test "different devices" do
+        t([1, 2, 3], backend: {Candlex.Backend, device: :cpu})
+        |> Nx.add(t([10, 20, 30], backend: {Candlex.Backend, device: :metal}))
+        |> assert_equal(t([11, 22, 33]))
+
+        t([1, 2, 3], backend: {Candlex.Backend, device: :metal})
+        |> Nx.add(t([10, 20, 30], backend: {Candlex.Backend, device: :cpu}))
+        |> assert_equal(t([11, 22, 33]))
+      end
+    end
+
     test "backend_transfer" do
       t([1, 2, 3], backend: Nx.BinaryBackend)
       |> Nx.backend_transfer({Candlex.Backend, device: :cpu})
