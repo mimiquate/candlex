@@ -23,7 +23,7 @@ defmodule Candlex.Mixfile do
           Candlex.Project.deps(),
           fn extra_dep, deps ->
             deps
-            |> List.keyreplace(elem(extra_dep,0), 0, extra_dep)
+            |> List.keyreplace(elem(extra_dep, 0), 0, extra_dep)
           end
         )
       end
