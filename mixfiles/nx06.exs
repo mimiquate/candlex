@@ -1,4 +1,4 @@
-Code.require_file("lib/candlex/mixfile.ex")
+Code.eval_file("mixfile.ex")
 
 defmodule Candlex.MixProject do
   use Candlex.Mixfile
