@@ -112,7 +112,7 @@ checksum = "14c189c53d098945499cdfa7ecc63567cf3886b3332b312a5b4585d8d3a6a610"
 [[package]]
 name = "candle-core"
 version = "0.3.2"
-source = "git+https://github.com/mimiquate/candle?branch=metal-i64#04aaa0befcdedf82db16e5d504196e12fcf764d2"
+source = "git+https://github.com/mimiquate/candle?branch=metal-i64#5d8e2bb16aecb3fc8dbc356ea6d9c5849ca80e5f"
 dependencies = [
  "byteorder",
  "candle-kernels",
@@ -136,7 +136,7 @@ dependencies = [
 [[package]]
 name = "candle-kernels"
 version = "0.3.2"
-source = "git+https://github.com/mimiquate/candle?branch=metal-i64#04aaa0befcdedf82db16e5d504196e12fcf764d2"
+source = "git+https://github.com/mimiquate/candle?branch=metal-i64#5d8e2bb16aecb3fc8dbc356ea6d9c5849ca80e5f"
 dependencies = [
  "anyhow",
  "glob",
@@ -146,7 +146,7 @@ dependencies = [
 [[package]]
 name = "candle-metal-kernels"
 version = "0.3.2"
-source = "git+https://github.com/mimiquate/candle?branch=metal-i64#04aaa0befcdedf82db16e5d504196e12fcf764d2"
+source = "git+https://github.com/mimiquate/candle?branch=metal-i64#5d8e2bb16aecb3fc8dbc356ea6d9c5849ca80e5f"
 dependencies = [
  "metal",
  "once_cell",
