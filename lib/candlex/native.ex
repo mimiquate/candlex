@@ -11,7 +11,7 @@ defmodule Candlex.Native do
 
   use RustlerPrecompiled,
     otp_app: :candlex,
-    features: if(Application.compile_env(:candlex, :use_cuda), do: [:cuda], else: []),
+    features: if(Application.compile_env(:candlex, :use_metal), do: [:metal], else: []),
     base_url: "#{source_url}/releases/download/v#{version}",
     force_build: System.get_env("CANDLEX_NIF_BUILD") in ["1", "true"],
     mode: mode,
