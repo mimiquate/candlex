@@ -9,9 +9,16 @@ defmodule Candlex.Native do
   # mode = if Mix.env() in [:dev, :test], do: :debug, else: :release
   mode = :release
 
+  features =
+    cond do
+      Application.compile_env(:candlex, :use_cuda) -> [:cuda]
+      Application.compile_env(:candlex, :use_metal) -> [:metal]
+      true -> []
+    end
+
   use RustlerPrecompiled,
     otp_app: :candlex,
-    features: if(Application.compile_env(:candlex, :use_metal), do: [:metal], else: []),
+    features: features,
     base_url: "#{source_url}/releases/download/v#{version}",
     force_build: System.get_env("CANDLEX_NIF_BUILD") in ["1", "true"],
     mode: mode,
