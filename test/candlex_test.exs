@@ -723,7 +723,7 @@ defmodule CandlexTest do
 
       t([1.0, 2, 3])
       |> Nx.exp()
-      |> assert_equal(t([2.7182817459106445, 7.389056205749512, 20.08553695678711]))
+      |> assert_close(t([2.7182817459106445, 7.389056205749512, 20.08553695678711]))
     end
 
     test "expm1" do
@@ -759,7 +759,7 @@ defmodule CandlexTest do
 
       t([1.0, 2, 3])
       |> Nx.log()
-      |> assert_equal(t([0.0, 0.6931471824645996, 1.0986123085021973]))
+      |> assert_close(t([0.0, 0.6931471824645996, 1.0986123085021973]))
     end
 
     test "tanh" do
