@@ -1415,7 +1415,7 @@ defmodule CandlexTest do
 
       t([0.1, 0.2, 0.3])
       |> Nx.mean()
-      |> assert_equal(t(0.2))
+      |> assert_close(t(0.2))
     end
 
     test "pow" do
