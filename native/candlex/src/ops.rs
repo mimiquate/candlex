@@ -109,6 +109,9 @@ macro_rules! custom_unary_op {
                 use candle_core::{backend::BackendStorage, DType};
                 let device = storage.device();
 
+                let command_buffer = device.command_buffer()?;
+                command_buffer.set_label($name);
+
                 let kernel_name = match storage.dtype() {
                     DType::F32 => "{$name}_f32",
                     dtype => candle_core::bail!("$name is not implemented for {dtype:?}"),
@@ -123,7 +126,7 @@ macro_rules! custom_unary_op {
 
                 metal_kernels::call_custom_unary_contiguous(
                     device.metal_device(),
-                    &device.command_buffer()?,
+                    &command_buffer,
                     &device.kernels(),
                     kernel_name,
                     elem_count,

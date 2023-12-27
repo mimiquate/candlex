@@ -53,7 +53,7 @@ macro_rules! primitive {
         }
     };
 }
-// primitive!(usize);
+primitive!(usize);
 // primitive!(u32);
 primitive!(f32);
 
