@@ -101,16 +101,16 @@ macro_rules! custom_unary_op {
                 storage: &MetalStorage,
                 layout: &Layout,
             ) -> Result<(MetalStorage, Shape), candle_core::Error> {
-                use candle::{backend::BackendStorage, DType};
+                use candle_core::{backend::BackendStorage, DType};
                 let device = storage.device();
 
                 let kernel_name = match storage.dtype() {
                     DType::F32 => "{$name}_f32",
-                    dtype => candle::bail!("{$name} is not implemented for {dtype:?}"),
+                    dtype => candle_core::bail!("$name is not implemented for {dtype:?}"),
                 };
 
                 if !(layout.is_contiguous() && layout.stride()[layout.stride().len() - 1] == 1) {
-                    candle::bail!("Non contiguous not supported");
+                    candle_core::bail!("Non contiguous not supported");
                 }
 
                 let elem_count = layout.shape().elem_count();

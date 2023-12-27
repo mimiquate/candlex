@@ -1,12 +1,12 @@
 use metal::{
     Buffer, CommandBufferRef, CompileOptions, ComputeCommandEncoderRef, ComputePipelineState,
-    Device, Function, FunctionConstantValues, Library, MTLDataType, MTLSize, NSUInteger,
+    Device, Function, FunctionConstantValues, Library, MTLSize
 };
 use std::collections::HashMap;
 use std::ffi::c_void;
 use std::sync::RwLock;
 
-const CUSTOM_UNARY: &str = include_str!("custom_unary.metal");
+const CUSTOM_UNARY: &str = include_str!("metal_kernels/custom_unary.metal");
 
 /// Most kernels apply similarly across the tensors
 /// This creates a strategy that uses the maximum amount of threads per threadgroup (capped at the
@@ -289,4 +289,56 @@ pub fn call_custom_unary_contiguous(
     encoder.update_fence(&kernels.fence);
     encoder.end_encoding();
     Ok(())
+}
+
+#[derive(Debug, PartialEq)]
+pub enum Value {
+    F32(f32),
+}
+
+impl std::hash::Hash for Value {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        match self {
+            Value::F32(v) => v.to_bits().hash(state),
+        }
+    }
+}
+
+impl Value {
+    fn data_type(&self) -> MTLDataType {
+        match self {
+            Value::F32(_) => MTLDataType::Float,
+        }
+    }
+}
+
+/// Not true, good enough for our purposes.
+impl Eq for Value {}
+
+#[derive(Debug, Eq, PartialEq, Hash)]
+struct ConstantValues(Vec<(usize, Value)>);
+
+impl ConstantValues {
+    pub fn new(values: Vec<(usize, Value)>) -> Self {
+        Self(values)
+    }
+
+    fn function_constant_values(&self) -> FunctionConstantValues {
+        let f = FunctionConstantValues::new();
+
+        for (index, value) in &self.0 {
+            let ty = value.data_type();
+            match value {
+                Value::F32(v) => {
+                    f.set_constant_value_at_index(
+                        v as *const f32 as *const c_void,
+                        ty,
+                        *index as u64,
+                    );
+                }
+            }
+        }
+
+        f
+    }
 }
