@@ -206,7 +206,7 @@ macro_rules! custom_unary_bool_op {
 
                 let kernel = match dtype {
                     DType::F32 => contiguous::$name::FLOAT,
-                    dtype => crate::bail!("metal $name - {dtype:?} not implemented"),
+                    dtype => candle_core::bail!("metal $name - {dtype:?} not implemented"),
                 };
 
                 if !(layout.is_contiguous() && layout.stride()[layout.stride().len() - 1] == 1) {
