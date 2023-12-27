@@ -112,10 +112,12 @@ macro_rules! custom_unary_op {
                 let command_buffer = device.command_buffer()?;
                 command_buffer.set_label($name);
 
-                let kernel_name = match storage.dtype() {
-                    DType::F32 => "{$name}_f32",
-                    dtype => candle_core::bail!("$name is not implemented for {dtype:?}"),
-                };
+                use metal_kernels::custom_unary::contiguous;
+
+                let kernel = match dtype {
+                    DType::F32 => contiguous::$name::FLOAT,
+                    dtype => crate::bail!("metal $name - {dtype:?} not implemented"),
+                }
 
                 if !(layout.is_contiguous() && layout.stride()[layout.stride().len() - 1] == 1) {
                     candle_core::bail!("Non contiguous not supported");
@@ -128,7 +130,7 @@ macro_rules! custom_unary_op {
                     device.metal_device(),
                     &command_buffer,
                     device.kernels(),
-                    kernel_name,
+                    kernel,
                     elem_count,
                     storage.buffer(),
                     &output_buffer,
