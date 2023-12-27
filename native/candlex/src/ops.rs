@@ -204,7 +204,7 @@ macro_rules! custom_unary_bool_op {
 
                 use metal_kernels::custom_unary::contiguous;
 
-                let kernel = match dtype {
+                let kernel = match storage.dtype() {
                     DType::F32 => contiguous::$name::FLOAT,
                     dtype => candle_core::bail!("metal $name - {dtype:?} not implemented"),
                 };
