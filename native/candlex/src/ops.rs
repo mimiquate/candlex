@@ -99,54 +99,6 @@ macro_rules! custom_unary_op {
                 )
             }
 
-            #[cfg(feature = "metal")]
-            fn metal_fwd(
-                &self,
-                storage: &MetalStorage,
-                layout: &Layout,
-            ) -> Result<(MetalStorage, Shape), candle_core::Error> {
-                use crate::metal_kernels;
-                use candle_core::{backend::BackendStorage, DType};
-                let device = storage.device();
-
-                let command_buffer = device.command_buffer()?;
-                command_buffer.set_label($name);
-
-                use metal_kernels::custom_unary::contiguous;
-
-                let kernel = match dtype {
-                    DType::F32 => contiguous::$name::FLOAT,
-                    dtype => crate::bail!("metal $name - {dtype:?} not implemented"),
-                }
-
-                if !(layout.is_contiguous() && layout.stride()[layout.stride().len() - 1] == 1) {
-                    candle_core::bail!("Non contiguous not supported");
-                }
-
-                let elem_count = layout.shape().elem_count();
-                let output_buffer = device.new_buffer(elem_count, storage.dtype(), $name)?;
-
-                metal_kernels::call_custom_unary_contiguous(
-                    device.metal_device(),
-                    &command_buffer,
-                    device.kernels(),
-                    kernel,
-                    elem_count,
-                    storage.buffer(),
-                    &output_buffer,
-                ).map_err(MetalError::from)?;
-
-                Ok(
-                    (
-                        MetalStorage::new(
-                            output_buffer,
-                            device.clone(),
-                            storage.dtype()
-                        ),
-                        layout.shape().clone()
-                    )
-                )
-            }
         }
     };
 }
@@ -232,6 +184,55 @@ macro_rules! custom_unary_bool_op {
                             slice,
                             device: device.clone(),
                         },
+                        layout.shape().clone()
+                    )
+                )
+            }
+
+            #[cfg(feature = "metal")]
+            fn metal_fwd(
+                &self,
+                storage: &MetalStorage,
+                layout: &Layout,
+            ) -> Result<(MetalStorage, Shape), candle_core::Error> {
+                use crate::metal_kernels;
+                use candle_core::{backend::BackendStorage, DType};
+                let device = storage.device();
+
+                let command_buffer = device.command_buffer()?;
+                command_buffer.set_label($name);
+
+                use metal_kernels::custom_unary::contiguous;
+
+                let kernel = match dtype {
+                    DType::F32 => contiguous::$name::FLOAT,
+                    dtype => crate::bail!("metal $name - {dtype:?} not implemented"),
+                };
+
+                if !(layout.is_contiguous() && layout.stride()[layout.stride().len() - 1] == 1) {
+                    candle_core::bail!("Non contiguous not supported");
+                }
+
+                let elem_count = layout.shape().elem_count();
+                let output_buffer = device.new_buffer(elem_count, DType::U8, $name)?;
+
+                metal_kernels::call_custom_unary_contiguous(
+                    device.metal_device(),
+                    &command_buffer,
+                    device.kernels(),
+                    kernel,
+                    elem_count,
+                    storage.buffer(),
+                    &output_buffer,
+                ).map_err(MetalError::from)?;
+
+                Ok(
+                    (
+                        MetalStorage::new(
+                            output_buffer,
+                            device.clone(),
+                            storage.dtype()
+                        ),
                         layout.shape().clone()
                     )
                 )

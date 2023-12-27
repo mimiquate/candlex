@@ -128,7 +128,7 @@ macro_rules! ops {
 }
 
 pub mod custom_unary {
-    ops!(is_inf);
+    ops!(is_inf, is_nan);
 }
 
 #[derive(thiserror::Error, Debug)]
