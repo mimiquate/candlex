@@ -10,6 +10,8 @@ mod devices;
 mod error;
 #[cfg(feature = "cuda")]
 mod kernels;
+#[cfg(feature = "metal")]
+mod metal_kernels;
 mod ops;
 mod tensors;
 

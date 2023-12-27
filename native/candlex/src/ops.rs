@@ -1,5 +1,5 @@
 #[cfg(feature = "cuda")]
-use candle_core::CudaStorage;
+use candle_core::{CudaStorage, MetalStorage, MetalError};
 use candle_core::{CpuStorage, CustomOp1, CustomOp2, Error, Layout, Shape};
 use num_traits::cast::FromPrimitive;
 use num_traits::Float;
@@ -90,6 +90,49 @@ macro_rules! custom_unary_op {
                             slice,
                             device: device.clone(),
                         },
+                        layout.shape().clone()
+                    )
+                )
+            }
+
+            #[cfg(feature = "metal")]
+            fn metal_fwd(
+                &self,
+                storage: &MetalStorage,
+                layout: &Layout,
+            ) -> Result<(MetalStorage, Shape), candle_core::Error> {
+                use candle::{backend::BackendStorage, DType};
+                let device = storage.device();
+
+                let kernel_name = match storage.dtype() {
+                    DType::F32 => "{$name}_f32",
+                    dtype => candle::bail!("{$name} is not implemented for {dtype:?}"),
+                };
+
+                if !(layout.is_contiguous() && layout.stride()[layout.stride().len() - 1] == 1) {
+                    candle::bail!("Non contiguous not supported");
+                }
+
+                let elem_count = layout.shape().elem_count();
+                let output_buffer = device.new_buffer(elem_count, storage.dtype(), $name)?;
+
+                metal_kernels::call_custom_unary_contiguous(
+                    device.metal_device(),
+                    &device.command_buffer()?,
+                    &device.kernels,
+                    kernel_name,
+                    elem_count,
+                    storage.buffer(),
+                    &output_buffer,
+                ).map_err(MetalError::from)?;
+
+                Ok(
+                    (
+                        MetalStorage::new(
+                            output_buffer,
+                            device.clone(),
+                            storage.dtype()
+                        ),
                         layout.shape().clone()
                     )
                 )
