@@ -1,5 +1,9 @@
 #[cfg(feature = "cuda")]
-use candle_core::{CudaStorage, MetalStorage, MetalError};
+use candle_core::{CudaStorage};
+
+#[cfg(feature = "metal")]
+use candle_core::{MetalStorage, MetalError};
+
 use candle_core::{CpuStorage, CustomOp1, CustomOp2, Error, Layout, Shape};
 use num_traits::cast::FromPrimitive;
 use num_traits::Float;
@@ -101,6 +105,7 @@ macro_rules! custom_unary_op {
                 storage: &MetalStorage,
                 layout: &Layout,
             ) -> Result<(MetalStorage, Shape), candle_core::Error> {
+                use crate::metal_kernels;
                 use candle_core::{backend::BackendStorage, DType};
                 let device = storage.device();
 
