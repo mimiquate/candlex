@@ -1,6 +1,6 @@
 use metal::{
     Buffer, CommandBufferRef, CompileOptions, ComputeCommandEncoderRef, ComputePipelineState,
-    Device, Function, FunctionConstantValues, Library, MTLDataType, MTLSize
+    Device, Function, FunctionConstantValues, Library, MTLDataType, MTLSize,
 };
 use std::collections::HashMap;
 use std::ffi::c_void;

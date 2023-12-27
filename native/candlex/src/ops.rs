@@ -1,8 +1,8 @@
 #[cfg(feature = "cuda")]
-use candle_core::{CudaStorage};
+use candle_core::CudaStorage;
 
 #[cfg(feature = "metal")]
-use candle_core::{MetalStorage, MetalError};
+use candle_core::{MetalError, MetalStorage};
 
 use candle_core::{CpuStorage, CustomOp1, CustomOp2, Error, Layout, Shape};
 use num_traits::cast::FromPrimitive;
