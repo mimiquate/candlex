@@ -161,6 +161,7 @@ dependencies = [
  "anyhow",
  "candle-core",
  "half",
+ "metal",
  "num-traits",
  "rustler",
  "statrs",
