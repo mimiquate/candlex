@@ -104,13 +104,13 @@ macro_rules! custom_unary_op {
 }
 
 macro_rules! custom_unary_bool_op {
-    ($struct_name:ident, $name:expr, $fn_name:ident, ($($dtypes:ident),+)) => {
+    ($struct_name:ident, $name:ident, $fn_name:ident, ($($dtypes:ident),+)) => {
         pub(crate) struct $struct_name;
 
         impl CustomOp1 for $struct_name {
             // Box<dyn> does not support const yet, so use a function to get the name.
             fn name(&self) -> &'static str {
-                $name
+                stringify!($name)
             }
 
             /// The forward pass, as run on a cpu device. Note that the storage can use arbitrary strides,
@@ -135,7 +135,7 @@ macro_rules! custom_unary_bool_op {
                             )
                         }
                     )*
-                    s => Err(Error::UnsupportedDTypeForOp(s.dtype(), $name).bt())?
+                    s => Err(Error::UnsupportedDTypeForOp(s.dtype(), stringify!($name)).bt())?
                 }
             }
 
@@ -159,7 +159,7 @@ macro_rules! custom_unary_bool_op {
                         _wrap: W,
                     ) -> Result<CudaStorageSlice, candle_core::Error> {
                         let src = src.slice(layout.start_offset()..);
-                        let func = device.get_or_load_func(&kernel_name::<T>($name), kernels::CUSTOM_UNARY)?;
+                        let func = device.get_or_load_func(&kernel_name::<T>(stringify!($name)), kernels::CUSTOM_UNARY)?;
                         let dims = layout.shape().dims();
                         let elem_count = layout.shape().elem_count();
                         let launch_config = LaunchConfig::for_num_elems(elem_count as u32);
@@ -200,7 +200,7 @@ macro_rules! custom_unary_bool_op {
                 let device = storage.device();
 
                 let command_buffer = device.command_buffer()?;
-                command_buffer.set_label($name);
+                // command_buffer.set_label($name);
 
                 use metal_kernels::custom_unary::contiguous;
 
@@ -214,7 +214,7 @@ macro_rules! custom_unary_bool_op {
                 }
 
                 let elem_count = layout.shape().elem_count();
-                let output_buffer = device.new_buffer(elem_count, DType::U8, $name)?;
+                let output_buffer = device.new_buffer(elem_count, DType::U8, stringify!($name))?;
 
                 metal_kernels::call_custom_unary_contiguous(
                     device.metal_device(),
@@ -472,8 +472,8 @@ custom_unary_op!(Sigmoid, "sigmoid", |v| 1. / (1. + (-v).exp()), (F32, F64));
 custom_unary_op!(Sign, "sign", |v| v.signum(), (I64, BF16, F16, F32, F64));
 custom_unary_op!(Sinh, "sinh", |v| v.sinh(), (BF16, F16, F32, F64));
 custom_unary_op!(Tan, "tan", |v| v.tan(), (BF16, F16, F32, F64));
-custom_unary_bool_op!(IsInf, "is_inf", is_infinite, (F32, F64));
-custom_unary_bool_op!(IsNan, "is_nan", is_nan, (F32, F64));
+custom_unary_bool_op!(IsInf, is_inf, is_infinite, (F32, F64));
+custom_unary_bool_op!(IsNan, is_nan, is_nan, (F32, F64));
 
 custom_binary_op!(BitAnd, "bit_and", |v1, v2| v1 & v2, (U32, I64));
 custom_binary_op!(BitOr, "bit_or", |v1, v2| v1 | v2, (U32, I64));
