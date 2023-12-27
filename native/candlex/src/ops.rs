@@ -124,7 +124,7 @@ macro_rules! custom_unary_op {
                 metal_kernels::call_custom_unary_contiguous(
                     device.metal_device(),
                     &device.command_buffer()?,
-                    &device.kernels,
+                    &device.kernels(),
                     kernel_name,
                     elem_count,
                     storage.buffer(),
