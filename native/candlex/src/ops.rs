@@ -238,17 +238,24 @@ macro_rules! custom_unary_bool_op {
 
                 let device = storage.device();
                 let command_buffer = device.command_buffer()?;
+
+                let kernel_name = match storage.dtype() {
+                    DType::F32 => metal_kernels::custom_unary::contiguous::$name::FLOAT,
+                    dtype => candle_core::bail!("metal $name - {dtype:?} not implemented"),
+                };
+
                 let elem_count = layout.shape().elem_count();
                 let output_buffer = device.new_buffer(elem_count, DType::U8, stringify!($name))?;
 
                 metal_kernels::call_custom_unary_contiguous(
                     &device.device(),
                     &command_buffer,
+                    kernel_name,
                     metal_kernels::custom_unary::contiguous::$name::FLOAT,
                     elem_count,
                     storage.buffer(),
                     &output_buffer,
-                ).unwrap();
+                ).map_err(MetalError::from)?;
 
                 Ok((MetalStorage::new(output_buffer, device.clone(), DType::U8), layout.shape().clone()))
             }
