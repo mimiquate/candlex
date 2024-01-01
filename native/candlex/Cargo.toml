@@ -18,7 +18,7 @@ statrs = "0.16.0"
 thiserror = "1.0.52"
 
 [build-dependencies]
-anyhow = "1.0.77"
+anyhow = "1.0.78"
 
 [features]
 cuda = ["candle-core/cuda"]
