@@ -78,7 +78,7 @@ checksum = "14c189c53d098945499cdfa7ecc63567cf3886b3332b312a5b4585d8d3a6a610"
 [[package]]
 name = "candle-core"
 version = "0.3.3"
-source = "git+https://github.com/huggingface/candle#ea36f3b11feb7408207413bce1611bdc33d449f4"
+source = "git+https://github.com/huggingface/candle#5270224f407502b82fe90bc2622894ce3871b002"
 dependencies = [
  "byteorder",
  "candle-kernels",
@@ -100,7 +100,7 @@ dependencies = [
 [[package]]
 name = "candle-kernels"
 version = "0.3.3"
-source = "git+https://github.com/huggingface/candle#ea36f3b11feb7408207413bce1611bdc33d449f4"
+source = "git+https://github.com/huggingface/candle#5270224f407502b82fe90bc2622894ce3871b002"
 dependencies = [
  "bindgen_cuda",
 ]
@@ -717,9 +717,9 @@ dependencies = [
 
 [[package]]
 name = "safetensors"
-version = "0.3.3"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d93279b86b3de76f820a8854dd06cbc33cfa57a417b19c47f6a25280112fb1df"
+checksum = "1659ef1c27917eb58c2d53664b5506d0b68c9cb9b460d3e0901011cf71269a8e"
 dependencies = [
  "serde",
  "serde_json",
