@@ -270,3 +270,51 @@ pub fn call_custom_binary_contiguous(
 
     Ok(())
 }
+
+pub fn call_custom_binary_strided(
+    device: &Device,
+    command_buffer: &CommandBufferRef,
+    kernel_name: custom_binary::strided::Kernel,
+    shape: &[usize],
+    left_buffer: &Buffer,
+    left_strides: &[usize],
+    left_offset: usize,
+    right_buffer: &Buffer,
+    right_strides: &[usize],
+    right_offset: usize,
+    output_buffer: &Buffer,
+) -> Result<(), MetalKernelError> {
+    let pipeline = CustomKernels::new().load_pipeline(device, Source::CustomBinary, kernel_name.0)?;
+
+    let num_dims: usize = shape.len();
+    let encoder = command_buffer.new_compute_command_encoder();
+    let width: usize = shape.iter().product();
+    encoder.set_compute_pipeline_state(&pipeline);
+
+    let length: usize = shape.iter().product();
+
+    set_params!(
+        encoder,
+        (
+            length,
+            num_dims,
+            shape,
+            left_strides,
+            right_strides,
+            (left_buffer, left_offset),
+            (right_buffer, right_offset),
+            output_buffer
+        )
+    );
+
+    encoder.use_resource(left_buffer, metal::MTLResourceUsage::Read);
+    encoder.use_resource(right_buffer, metal::MTLResourceUsage::Read);
+    encoder.use_resource(output_buffer, metal::MTLResourceUsage::Write);
+
+    let (thread_group_count, thread_group_size) = linear_split(&pipeline, width);
+    encoder.dispatch_thread_groups(thread_group_count, thread_group_size);
+
+    encoder.end_encoding();
+
+    Ok(())
+}
