@@ -288,7 +288,6 @@ pub fn call_custom_binary_strided(
 
     let num_dims: usize = shape.len();
     let encoder = command_buffer.new_compute_command_encoder();
-    let width: usize = shape.iter().product();
     encoder.set_compute_pipeline_state(&pipeline);
 
     let length: usize = shape.iter().product();
@@ -311,6 +310,7 @@ pub fn call_custom_binary_strided(
     encoder.use_resource(right_buffer, metal::MTLResourceUsage::Read);
     encoder.use_resource(output_buffer, metal::MTLResourceUsage::Write);
 
+    let width: usize = shape.iter().product();
     let (thread_group_count, thread_group_size) = linear_split(&pipeline, width);
     encoder.dispatch_thread_groups(thread_group_count, thread_group_size);
 
