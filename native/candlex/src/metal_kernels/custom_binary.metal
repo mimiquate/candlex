@@ -1,19 +1,19 @@
 using namespace metal;
 
-#define CUSTOM_BINARY(TYPENAME, OUT_TYPENAME, FN_NAME, FN) \
+#define CUSTOM_BINARY(IN_TYPE, OUT_TYPE, FN_NAME, FN) \
 kernel void FN_NAME( \
     constant size_t &dim, \
-    device const TYPENAME *left,  \
-    device const TYPENAME *right,  \
-    device OUT_TYPENAME *output, \
+    device const IN_TYPE *left,  \
+    device const IN_TYPE *right,  \
+    device OUT_TYPE *output, \
     uint tid [[ thread_position_in_grid ]] \
 ) { \
     if (tid >= dim) { \
         return; \
     } \
-    TYPENAME x = left[tid]; \
-    TYPENAME y = right[tid]; \
-    output[tid] = OUT_TYPENAME(FN); \
+    IN_TYPE x = left[tid]; \
+    IN_TYPE y = right[tid]; \
+    output[tid] = OUT_TYPE(FN); \
 }
 
 CUSTOM_BINARY(int64_t, int64_t, bit_and_i64, x & y)

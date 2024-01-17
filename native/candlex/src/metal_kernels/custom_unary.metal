@@ -2,45 +2,29 @@
 
 using namespace metal;
 
-#define CUSTOM_UNARY(TYPENAME, FN_NAME, FN) \
+#define CUSTOM_UNARY(IN_TYPE, OUT_TYPE, FN_NAME, FN) \
 kernel void FN_NAME( \
     constant size_t &dim, \
-    device const TYPENAME *input,  \
-    device TYPENAME *output, \
+    device const IN_TYPE *input,  \
+    device OUT_TYPE *output, \
     uint tid [[ thread_position_in_grid ]] \
 ) { \
     if (tid >= dim) { \
         return; \
     } \
-    output[tid] = TYPENAME(FN(float(input[tid]))); \
+    output[tid] = OUT_TYPE(FN(IN_TYPE(input[tid]))); \
 }
 
-#define CUSTOM_UNARY_OP(NAME) \
-CUSTOM_UNARY(float, NAME##_f32, NAME);
-
-#define CUSTOM_UNARY_OP_OUT(TYPENAME, OUT_TYPENAME, FN_NAME, FN) \
-kernel void FN_NAME( \
-    constant size_t &dim, \
-    device const TYPENAME *input,  \
-    device OUT_TYPENAME *output, \
-    uint tid [[ thread_position_in_grid ]] \
-) { \
-    if (tid >= dim) { \
-        return; \
-    } \
-    output[tid] = OUT_TYPENAME(FN(float(input[tid]))); \
-}
-
-CUSTOM_UNARY_OP(acos)
-CUSTOM_UNARY_OP(acosh)
-CUSTOM_UNARY_OP(asin)
-CUSTOM_UNARY_OP(asinh)
-CUSTOM_UNARY_OP(atan)
-CUSTOM_UNARY_OP(atanh)
-CUSTOM_UNARY_OP(cosh)
-CUSTOM_UNARY_OP(sign)
-CUSTOM_UNARY_OP(sinh)
-CUSTOM_UNARY_OP(tan)
+CUSTOM_UNARY(float, float, acos_f32, acos)
+CUSTOM_UNARY(float, float, acosh_f32, acosh)
+CUSTOM_UNARY(float, float, asin_f32, asin)
+CUSTOM_UNARY(float, float, asinh_f32, asinh)
+CUSTOM_UNARY(float, float, atan_f32, atan)
+CUSTOM_UNARY(float, float, atanh_f32, atanh)
+CUSTOM_UNARY(float, float, cosh_f32, cosh)
+CUSTOM_UNARY(float, float, sign_f32, sign)
+CUSTOM_UNARY(float, float, sinh_f32, sinh)
+CUSTOM_UNARY(float, float, tan_f32, tan)
 
 /* bit_not */
 /* cbrt */
@@ -50,5 +34,5 @@ CUSTOM_UNARY_OP(tan)
 /* ln_1p */
 /* sigmoid */
 
-CUSTOM_UNARY_OP_OUT(float, uint8_t, is_inf_f32, isinf)
-CUSTOM_UNARY_OP_OUT(float, uint8_t, is_nan_f32, isnan)
+CUSTOM_UNARY(float, uint8_t, is_inf_f32, isinf)
+CUSTOM_UNARY(float, uint8_t, is_nan_f32, isnan)
