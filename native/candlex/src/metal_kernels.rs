@@ -189,7 +189,8 @@ pub fn call_custom_unary_strided(
     output_buffer: &Buffer,
     output_offset: usize,
 ) -> Result<(), MetalKernelError> {
-    let pipeline = CustomKernels::new().load_pipeline(device, Source::CustomUnary, kernel_name.0)?;
+    let pipeline =
+        CustomKernels::new().load_pipeline(device, Source::CustomUnary, kernel_name.0)?;
     let encoder = command_buffer.new_compute_command_encoder();
     encoder.set_compute_pipeline_state(&pipeline);
 
