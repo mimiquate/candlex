@@ -284,7 +284,8 @@ pub fn call_custom_binary_strided(
     right_offset: usize,
     output_buffer: &Buffer,
 ) -> Result<(), MetalKernelError> {
-    let pipeline = CustomKernels::new().load_pipeline(device, Source::CustomBinary, kernel_name.0)?;
+    let pipeline =
+        CustomKernels::new().load_pipeline(device, Source::CustomBinary, kernel_name.0)?;
 
     let num_dims: usize = shape.len();
     let encoder = command_buffer.new_compute_command_encoder();
