@@ -106,30 +106,48 @@ macro_rules! custom_unary_op {
                 use crate::metal_kernels;
                 use candle_core::{backend::BackendStorage, DType};
 
-                if !(layout.is_contiguous() && layout.start_offset() == 0) {
-                    candle_core::bail!("Non contiguous not supported");
-                }
-
                 let device = storage.device();
                 let command_buffer = device.command_buffer()?;
                 let elem_count = layout.shape().elem_count();
                 let dtype = storage.dtype();
                 let output_buffer = device.new_buffer(elem_count, dtype, stringify!($name))?;
 
-                let kernel_name = match storage.dtype() {
-                    DType::F32 => metal_kernels::custom_unary::contiguous::$name::FLOAT,
-                    dtype => {
-                        candle_core::bail!("Metal contiguous custom unary $name {dtype:?} not implemented")
-                    }
-                };
-                metal_kernels::call_custom_unary_contiguous(
-                    &device.device(),
-                    &command_buffer,
-                    kernel_name,
-                    elem_count,
-                    storage.buffer(),
-                    &output_buffer,
-                ).unwrap();
+                if (layout.is_contiguous() && layout.start_offset() == 0) {
+                    let kernel_name = match storage.dtype() {
+                        DType::F32 => metal_kernels::custom_unary::contiguous::$name::FLOAT,
+                        dtype => {
+                            candle_core::bail!("Metal contiguous custom unary $name {dtype:?} not implemented")
+                        }
+                    };
+
+                    metal_kernels::call_custom_unary_contiguous(
+                        &device.device(),
+                        &command_buffer,
+                        kernel_name,
+                        elem_count,
+                        storage.buffer(),
+                        &output_buffer,
+                    ).unwrap();
+                } else {
+                    let kernel_name = match storage.dtype() {
+                        DType::F32 => metal_kernels::custom_unary::strided::$name::FLOAT,
+                        dtype => {
+                            candle_core::bail!("Metal strided custom unary $name {dtype:?} not implemented")
+                        }
+                    };
+
+                    metal_kernels::call_custom_unary_strided(
+                        &device.device(),
+                        &command_buffer,
+                        kernel_name,
+                        layout.dims(),
+                        layout.stride(),
+                        storage.buffer(),
+                        layout.start_offset() * dtype.size_in_bytes(),
+                        &output_buffer,
+                        0,
+                    ).unwrap();
+                }
 
                 Ok((MetalStorage::new(output_buffer, device.clone(), dtype), layout.shape().clone()))
             }

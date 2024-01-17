@@ -2,6 +2,21 @@
 
 using namespace metal;
 
+METAL_FUNC uint get_strided_index(
+    uint idx,
+    constant size_t &num_dims,
+    constant size_t *dims,
+    constant size_t *strides
+) {
+    uint strided_i = 0;
+    for (uint d = 0; d < num_dims; d++) {
+        uint dim_idx = num_dims - 1 - d;
+        strided_i += (idx % dims[dim_idx]) * strides[dim_idx];
+        idx /= dims[dim_idx];
+    }
+    return strided_i;
+}
+
 #define CUSTOM_UNARY(IN_TYPE, OUT_TYPE, FN_NAME, FN) \
 kernel void FN_NAME( \
     constant size_t &dim, \
@@ -13,6 +28,20 @@ kernel void FN_NAME( \
         return; \
     } \
     output[tid] = OUT_TYPE(FN(IN_TYPE(input[tid]))); \
+}\
+kernel void FN_NAME##_strided( \
+    constant size_t &dim, \
+    constant size_t &num_dims, \
+    constant size_t *dims, \
+    constant size_t *strides, \
+    device const IN_TYPE *input,  \
+    device OUT_TYPE *output, \
+    uint tid [[ thread_position_in_grid ]] \
+) { \
+    if (tid >= dim) { \
+        return; \
+    } \
+    output[tid] = OUT_TYPE(FN(IN_TYPE(input[get_strided_index(tid, num_dims, dims, strides)]))); \
 }
 
 CUSTOM_UNARY(float, float, acos_f32, acos)
