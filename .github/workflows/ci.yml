@@ -2,6 +2,8 @@ name: CI
 on:
   pull_request:
   push:
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
   main:
@@ -25,6 +27,8 @@ jobs:
         with:
           otp-version: ${{matrix.otp_version}}
           elixir-version: ${{matrix.elixir_version}}
+      - run: mix deps.unlock --all
+        if: ${{ github.event_name == 'schedule' }}
       - run: mix deps.get
       - run: mix format --check-formatted
         if: ${{ matrix.lint }}
