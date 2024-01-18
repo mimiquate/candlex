@@ -16,6 +16,9 @@ jobs:
           - elixir_version: 1.16.0
             otp_version: '26.2.1'
             mix_exs: "mixfiles/nx-edge.exs"
+          - elixir_version: 1.16.0
+            otp_version: '26.2.1'
+            mix_exs: "mixfiles/nx06.exs"
             lint: true
           - elixir_version: 1.15.7
             otp_version: '25.3.2.8'
