@@ -116,7 +116,7 @@ macro_rules! custom_unary_op {
                     let kernel_name = match storage.dtype() {
                         DType::F32 => metal_kernels::custom_unary::contiguous::$name::FLOAT,
                         dtype => {
-                            candle_core::bail!("Metal contiguous custom unary $name {dtype:?} not implemented")
+                            candle_core::bail!("Metal contiguous custom unary {} {dtype:?} not implemented", stringify!($name))
                         }
                     };
 
@@ -132,7 +132,7 @@ macro_rules! custom_unary_op {
                     let kernel_name = match storage.dtype() {
                         DType::F32 => metal_kernels::custom_unary::strided::$name::FLOAT,
                         dtype => {
-                            candle_core::bail!("Metal strided custom unary $name {dtype:?} not implemented")
+                            candle_core::bail!("Metal strided custom unary {} {dtype:?} not implemented", stringify!($name))
                         }
                     };
 
@@ -397,7 +397,7 @@ macro_rules! custom_binary_op {
                         DType::F32 => metal_kernels::custom_binary::contiguous::$name::FLOAT,
                         DType::I64 => metal_kernels::custom_binary::contiguous::$name::I64,
                         dtype => {
-                            candle_core::bail!("Metal contiguous custom binary $name {dtype:?} not implemented")
+                            candle_core::bail!("Metal contiguous custom binary {} {dtype:?} not implemented", stringify!($name))
                         }
                     };
 
@@ -414,7 +414,7 @@ macro_rules! custom_binary_op {
                     let kernel_name = match dtype {
                         DType::F32 => metal_kernels::custom_binary::strided::$name::FLOAT,
                         dtype => {
-                            candle_core::bail!("Metal strided custom binary $name {dtype:?} not implemented")
+                            candle_core::bail!("Metal strided custom binary {} {dtype:?} not implemented", stringify!($name))
                         }
                     };
 
@@ -574,7 +574,7 @@ macro_rules! custom_binary_bool_op {
                     DType::I64 => metal_kernels::custom_binary::contiguous::$name::I64,
                     DType::U8 => metal_kernels::custom_binary::contiguous::$name::U8,
                     dtype => {
-                        candle_core::bail!("Metal contiguous custom binary $name {dtype:?} not implemented")
+                        candle_core::bail!("Metal contiguous custom binary {} {dtype:?} not implemented", stringify!($name))
                     }
                 };
 
