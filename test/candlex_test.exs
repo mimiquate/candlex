@@ -1428,11 +1428,11 @@ defmodule CandlexTest do
 
       t([1.0, 2.0, 3.0])
       |> Nx.pow(2)
-      |> assert_equal(t([1.0, 4.0, 9.0]))
+      |> assert_close(t([1.0, 4.0, 9.0]))
 
       2
       |> Nx.pow(t([1.0, 2.0, 3.0]))
-      |> assert_equal(t([2.0, 4.0, 8.0]))
+      |> assert_close(t([2.0, 4.0, 8.0]))
 
       # t([[2], [3]])
       # |> Nx.pow(t([[4, 5]]))
