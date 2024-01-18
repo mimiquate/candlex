@@ -187,7 +187,6 @@ pub fn call_custom_unary_strided(
     input_buffer: &Buffer,
     input_offset: usize,
     output_buffer: &Buffer,
-    output_offset: usize,
 ) -> Result<(), MetalKernelError> {
     let pipeline =
         CustomKernels::new().load_pipeline(device, Source::CustomUnary, kernel_name.0)?;
@@ -221,7 +220,7 @@ pub fn call_custom_unary_strided(
     );
 
     encoder.set_buffer(4, Some(input_buffer), input_offset as u64);
-    encoder.set_buffer(5, Some(output_buffer), output_offset as u64);
+    encoder.set_buffer(5, Some(output_buffer), 0);
 
     encoder.use_resource(input_buffer, metal::MTLResourceUsage::Read);
     encoder.use_resource(output_buffer, metal::MTLResourceUsage::Write);
@@ -324,7 +323,7 @@ pub fn call_custom_binary_strided(
 
     encoder.set_buffer(5, Some(left_buffer), left_offset as u64);
     encoder.set_buffer(6, Some(right_buffer), right_offset as u64);
-    encoder.set_buffer(7, Some(output_buffer), output_offset as u64);
+    encoder.set_buffer(7, Some(output_buffer), 0);
 
     encoder.use_resource(left_buffer, metal::MTLResourceUsage::Read);
     encoder.use_resource(right_buffer, metal::MTLResourceUsage::Read);

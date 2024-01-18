@@ -145,7 +145,6 @@ macro_rules! custom_unary_op {
                         storage.buffer(),
                         layout.start_offset() * dtype.size_in_bytes(),
                         &output_buffer,
-                        0,
                     ).unwrap();
                 }
 
