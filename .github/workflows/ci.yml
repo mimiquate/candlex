@@ -13,16 +13,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - elixir_version: 1.16.0-rc.1
-            otp_version: '26.2'
+          - elixir_version: 1.16.0
+            otp_version: '26.2.1'
             mix_exs: "mixfiles/nx-edge.exs"
             lint: true
           - elixir_version: 1.15.7
-            otp_version: '26.2'
-            mix_exs: "mixfiles/nx06.exs"
-            lint: true
-          - elixir_version: 1.14.5
-            otp_version: 25.3.2.7
+            otp_version: '25.3.2.8'
             mix_exs: "mixfiles/nx06.exs"
     steps:
       - uses: actions/checkout@v4
