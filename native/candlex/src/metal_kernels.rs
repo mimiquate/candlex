@@ -293,19 +293,38 @@ pub fn call_custom_binary_strided(
 
     let length: usize = shape.iter().product();
 
-    set_params!(
-        encoder,
-        (
-            length,
-            num_dims,
-            shape,
-            left_strides,
-            right_strides,
-            (left_buffer, left_offset),
-            (right_buffer, right_offset),
-            output_buffer
-        )
+    encoder.set_bytes(
+        0,
+        core::mem::size_of::<usize>() as u64,
+        &length as *const usize as *const c_void,
     );
+    encoder.set_bytes(
+        1,
+        core::mem::size_of::<usize>() as u64,
+        &num_dims as *const usize as *const c_void,
+    );
+
+    encoder.set_bytes(
+        2,
+        core::mem::size_of_val(shape) as u64,
+        shape.as_ptr() as *const c_void,
+    );
+
+    encoder.set_bytes(
+        3,
+        core::mem::size_of_val(left_strides) as u64,
+        left_strides.as_ptr() as *const c_void,
+    );
+
+    encoder.set_bytes(
+        4,
+        core::mem::size_of_val(right_strides) as u64,
+        right_strides.as_ptr() as *const c_void,
+    );
+
+    encoder.set_buffer(5, Some(left_buffer), left_offset as u64);
+    encoder.set_buffer(6, Some(right_buffer), right_offset as u64);
+    encoder.set_buffer(7, Some(output_buffer), output_offset as u64);
 
     encoder.use_resource(left_buffer, metal::MTLResourceUsage::Read);
     encoder.use_resource(right_buffer, metal::MTLResourceUsage::Read);
