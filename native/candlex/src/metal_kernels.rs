@@ -49,6 +49,17 @@ macro_rules! ops {
                 }
             )+
         }
+        pub mod strided {
+            pub struct Kernel(pub &'static str);
+
+            $(
+                pub mod $name {
+                    use super::Kernel;
+
+                    pub const FLOAT: Kernel = Kernel(concat!(stringify!($name), "_f32_strided"));
+                }
+            )+
+        }
     }
 }
 
@@ -167,6 +178,62 @@ pub fn call_custom_unary_contiguous(
     Ok(())
 }
 
+pub fn call_custom_unary_strided(
+    device: &Device,
+    command_buffer: &CommandBufferRef,
+    kernel_name: custom_unary::strided::Kernel,
+    shape: &[usize],
+    strides: &[usize],
+    input_buffer: &Buffer,
+    input_offset: usize,
+    output_buffer: &Buffer,
+) -> Result<(), MetalKernelError> {
+    let pipeline =
+        CustomKernels::new().load_pipeline(device, Source::CustomUnary, kernel_name.0)?;
+    let encoder = command_buffer.new_compute_command_encoder();
+    encoder.set_compute_pipeline_state(&pipeline);
+
+    let num_dims: usize = shape.len();
+    let length: usize = shape.iter().product();
+
+    encoder.set_bytes(
+        0,
+        core::mem::size_of::<usize>() as u64,
+        &length as *const usize as *const c_void,
+    );
+    encoder.set_bytes(
+        1,
+        core::mem::size_of::<usize>() as u64,
+        &num_dims as *const usize as *const c_void,
+    );
+
+    encoder.set_bytes(
+        2,
+        core::mem::size_of_val(shape) as u64,
+        shape.as_ptr() as *const c_void,
+    );
+
+    encoder.set_bytes(
+        3,
+        core::mem::size_of_val(strides) as u64,
+        strides.as_ptr() as *const c_void,
+    );
+
+    encoder.set_buffer(4, Some(input_buffer), input_offset as u64);
+    encoder.set_buffer(5, Some(output_buffer), 0);
+
+    encoder.use_resource(input_buffer, metal::MTLResourceUsage::Read);
+    encoder.use_resource(output_buffer, metal::MTLResourceUsage::Write);
+
+    let width: usize = shape.iter().product();
+    let (thread_group_count, thread_group_size) = linear_split(&pipeline, width);
+    encoder.dispatch_thread_groups(thread_group_count, thread_group_size);
+
+    encoder.end_encoding();
+
+    Ok(())
+}
+
 pub fn call_custom_binary_contiguous(
     device: &Device,
     command_buffer: &CommandBufferRef,
@@ -196,6 +263,74 @@ pub fn call_custom_binary_contiguous(
     encoder.use_resource(output_buffer, metal::MTLResourceUsage::Write);
 
     let (thread_group_count, thread_group_size) = linear_split(&pipeline, length);
+    encoder.dispatch_thread_groups(thread_group_count, thread_group_size);
+
+    encoder.end_encoding();
+
+    Ok(())
+}
+
+pub fn call_custom_binary_strided(
+    device: &Device,
+    command_buffer: &CommandBufferRef,
+    kernel_name: custom_binary::strided::Kernel,
+    shape: &[usize],
+    left_buffer: &Buffer,
+    left_strides: &[usize],
+    left_offset: usize,
+    right_buffer: &Buffer,
+    right_strides: &[usize],
+    right_offset: usize,
+    output_buffer: &Buffer,
+) -> Result<(), MetalKernelError> {
+    let pipeline =
+        CustomKernels::new().load_pipeline(device, Source::CustomBinary, kernel_name.0)?;
+
+    let num_dims: usize = shape.len();
+    let encoder = command_buffer.new_compute_command_encoder();
+    encoder.set_compute_pipeline_state(&pipeline);
+
+    let length: usize = shape.iter().product();
+
+    encoder.set_bytes(
+        0,
+        core::mem::size_of::<usize>() as u64,
+        &length as *const usize as *const c_void,
+    );
+    encoder.set_bytes(
+        1,
+        core::mem::size_of::<usize>() as u64,
+        &num_dims as *const usize as *const c_void,
+    );
+
+    encoder.set_bytes(
+        2,
+        core::mem::size_of_val(shape) as u64,
+        shape.as_ptr() as *const c_void,
+    );
+
+    encoder.set_bytes(
+        3,
+        core::mem::size_of_val(left_strides) as u64,
+        left_strides.as_ptr() as *const c_void,
+    );
+
+    encoder.set_bytes(
+        4,
+        core::mem::size_of_val(right_strides) as u64,
+        right_strides.as_ptr() as *const c_void,
+    );
+
+    encoder.set_buffer(5, Some(left_buffer), left_offset as u64);
+    encoder.set_buffer(6, Some(right_buffer), right_offset as u64);
+    encoder.set_buffer(7, Some(output_buffer), 0);
+
+    encoder.use_resource(left_buffer, metal::MTLResourceUsage::Read);
+    encoder.use_resource(right_buffer, metal::MTLResourceUsage::Read);
+    encoder.use_resource(output_buffer, metal::MTLResourceUsage::Write);
+
+    let width: usize = shape.iter().product();
+    let (thread_group_count, thread_group_size) = linear_split(&pipeline, width);
     encoder.dispatch_thread_groups(thread_group_count, thread_group_size);
 
     encoder.end_encoding();
