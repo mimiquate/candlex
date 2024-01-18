@@ -52,6 +52,8 @@ kernel void FN_NAME##_strided( \
 CUSTOM_BINARY(int64_t, int64_t, bit_and_i64, x & y)
 CUSTOM_BINARY(int64_t, int64_t, bit_or_i64, x | y)
 CUSTOM_BINARY(int64_t, int64_t, bit_xor_i64, x ^ y)
+CUSTOM_BINARY(int64_t, int64_t, shl_i64, x << y)
+CUSTOM_BINARY(int64_t, int64_t, shr_i64, x >> y)
 
 CUSTOM_BINARY(float, float, atan2_f32, atan2(x, y))
 CUSTOM_BINARY(float, float, pow_f32, pow(x, y))
