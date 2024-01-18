@@ -57,6 +57,7 @@ macro_rules! ops {
                     use super::Kernel;
 
                     pub const FLOAT: Kernel = Kernel(concat!(stringify!($name), "_f32_strided"));
+                    pub const I64: Kernel = Kernel(concat!(stringify!($name), "_i64_strided"));
                 }
             )+
         }

@@ -413,6 +413,7 @@ macro_rules! custom_binary_op {
                 } else {
                     let kernel_name = match dtype {
                         DType::F32 => metal_kernels::custom_binary::strided::$name::FLOAT,
+                        DType::I64 => metal_kernels::custom_binary::strided::$name::I64,
                         dtype => {
                             candle_core::bail!("Metal strided custom binary {} {dtype:?} not implemented", stringify!($name))
                         }
