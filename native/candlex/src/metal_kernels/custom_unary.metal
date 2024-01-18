@@ -52,8 +52,11 @@ CUSTOM_UNARY(float, float, atan_f32, atan)
 CUSTOM_UNARY(float, float, atanh_f32, atanh)
 CUSTOM_UNARY(float, float, cosh_f32, cosh)
 CUSTOM_UNARY(float, float, sign_f32, sign)
+CUSTOM_UNARY(int64_t, int64_t, sign_i64, sign)
 CUSTOM_UNARY(float, float, sinh_f32, sinh)
 CUSTOM_UNARY(float, float, tan_f32, tan)
+CUSTOM_UNARY(uint64_t, uint64_t, bit_not_i64, not)
+CUSTOM_UNARY(uint8_t, uint8_t, bit_not_u8, not)
 
 /* bit_not */
 /* cbrt */
