@@ -66,9 +66,12 @@ CUSTOM_UNARY_OP(tan, tan)
 CUSTOM_UNARY_BOOL_OP(is_inf, isinf)
 CUSTOM_UNARY_BOOL_OP(is_nan, isnan)
 
-CUSTOM_UNARY(int64_t, int64_t, sign_i64, sign)
-CUSTOM_UNARY(uint64_t, uint64_t, bit_not_i64, not)
 CUSTOM_UNARY(uint8_t, uint8_t, bit_not_u8, not)
+
+#if __METAL_VERSION__ >= 220
+CUSTOM_UNARY(int64_t, int64_t, sign_i64, sign)
+CUSTOM_UNARY(int64_t, int64_t, bit_not_i64, not)
+#endif
 
 /* bit_not */
 /* cbrt */
