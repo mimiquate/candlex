@@ -115,6 +115,7 @@ macro_rules! custom_unary_op {
                 if (layout.is_contiguous() && layout.start_offset() == 0) {
                     let kernel_name = match storage.dtype() {
                         DType::F32 => metal_kernels::custom_unary::contiguous::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_unary::contiguous::$name::HALF,
                         DType::I64 => metal_kernels::custom_unary::contiguous::$name::I64,
                         DType::U32 => metal_kernels::custom_unary::contiguous::$name::U32,
                         DType::U8 => metal_kernels::custom_unary::contiguous::$name::U8,
@@ -134,6 +135,7 @@ macro_rules! custom_unary_op {
                 } else {
                     let kernel_name = match storage.dtype() {
                         DType::F32 => metal_kernels::custom_unary::strided::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_unary::strided::$name::HALF,
                         DType::I64 => metal_kernels::custom_unary::strided::$name::I64,
                         DType::U32 => metal_kernels::custom_unary::strided::$name::U32,
                         DType::U8 => metal_kernels::custom_unary::strided::$name::U8,
@@ -264,6 +266,7 @@ macro_rules! custom_unary_bool_op {
                 if (layout.is_contiguous() && layout.start_offset() == 0) {
                     let kernel_name = match dtype {
                         DType::F32 => metal_kernels::custom_unary::contiguous::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_unary::contiguous::$name::HALF,
                         DType::I64 => metal_kernels::custom_unary::contiguous::$name::I64,
                         DType::U32 => metal_kernels::custom_unary::contiguous::$name::U32,
                         DType::U8 => metal_kernels::custom_unary::contiguous::$name::U8,
@@ -283,6 +286,7 @@ macro_rules! custom_unary_bool_op {
                 } else {
                     let kernel_name = match dtype {
                         DType::F32 => metal_kernels::custom_unary::strided::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_unary::strided::$name::HALF,
                         DType::I64 => metal_kernels::custom_unary::strided::$name::I64,
                         DType::U32 => metal_kernels::custom_unary::strided::$name::U32,
                         DType::U8 => metal_kernels::custom_unary::strided::$name::U8,
@@ -431,6 +435,7 @@ macro_rules! custom_binary_op {
                 if (l1.is_contiguous() && l1.start_offset() == 0 && l2.is_contiguous() && l2.start_offset() == 0) {
                     let kernel_name = match dtype {
                         DType::F32 => metal_kernels::custom_binary::contiguous::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_binary::contiguous::$name::HALF,
                         DType::I64 => metal_kernels::custom_binary::contiguous::$name::I64,
                         DType::U32 => metal_kernels::custom_binary::contiguous::$name::U32,
                         DType::U8 => metal_kernels::custom_binary::contiguous::$name::U8,
@@ -451,6 +456,7 @@ macro_rules! custom_binary_op {
                 } else {
                     let kernel_name = match dtype {
                         DType::F32 => metal_kernels::custom_binary::strided::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_binary::strided::$name::HALF,
                         DType::I64 => metal_kernels::custom_binary::strided::$name::I64,
                         DType::U32 => metal_kernels::custom_binary::strided::$name::U32,
                         DType::U8 => metal_kernels::custom_binary::strided::$name::U8,
@@ -607,6 +613,7 @@ macro_rules! custom_binary_bool_op {
                 if (l1.is_contiguous() && l1.start_offset() == 0 && l2.is_contiguous() && l2.start_offset() == 0) {
                     let kernel_name = match s1.dtype() {
                         DType::F32 => metal_kernels::custom_binary::contiguous::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_binary::contiguous::$name::HALF,
                         DType::I64 => metal_kernels::custom_binary::contiguous::$name::I64,
                         DType::U32 => metal_kernels::custom_binary::contiguous::$name::U32,
                         DType::U8 => metal_kernels::custom_binary::contiguous::$name::U8,
@@ -627,6 +634,7 @@ macro_rules! custom_binary_bool_op {
                 } else {
                     let kernel_name = match s1.dtype() {
                         DType::F32 => metal_kernels::custom_binary::strided::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_binary::strided::$name::HALF,
                         DType::I64 => metal_kernels::custom_binary::strided::$name::I64,
                         DType::U32 => metal_kernels::custom_binary::strided::$name::U32,
                         DType::U8 => metal_kernels::custom_binary::strided::$name::U8,
