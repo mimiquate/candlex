@@ -51,25 +51,38 @@ kernel void FN_NAME##_strided( \
 
 #define CUSTOM_BINARY_OP(FN_NAME, FN)\
 CUSTOM_BINARY(float, float, FN_NAME##_f32, FN);\
-CUSTOM_BINARY(half, half, FN_NAME##_f16, FN);
+CUSTOM_BINARY(half, half, FN_NAME##_f16, FN);\
+CUSTOM_BINARY(uint32_t, uint32_t, FN_NAME##_u32, FN);\
+CUSTOM_BINARY(uint8_t, uint8_t, FN_NAME##_u8, FN);
+
+#define CUSTOM_BINARY_BOOL_OP(FN_NAME, FN)\
+CUSTOM_BINARY(float, uint8_t, FN_NAME##_f32, FN);\
+CUSTOM_BINARY(half, uint8_t, FN_NAME##_f16, FN);\
+CUSTOM_BINARY(uint32_t, uint8_t, FN_NAME##_u32, FN);\
+CUSTOM_BINARY(uint8_t, uint8_t, FN_NAME##_u8, FN);
 
 CUSTOM_BINARY_OP(atan2, atan2(x, y))
 CUSTOM_BINARY_OP(pow, pow(x, y))
+CUSTOM_BINARY_OP(bit_and, x & y)
+CUSTOM_BINARY_OP(bit_or, x | y)
+CUSTOM_BINARY_OP(bit_xor, x ^ y)
+CUSTOM_BINARY_OP(shl, x << y)
+CUSTOM_BINARY_OP(shr, x >> r)
 
+CUSTOM_BINARY_BOOL_OP(logical_and, x && y)
+CUSTOM_BINARY_BOOL_OP(logical_or, x || y)
+CUSTOM_BINARY_BOOL_OP(logical_xor, !x != !y)
+
+#if __METAL_VERSION__ >= 220
 CUSTOM_BINARY(int64_t, int64_t, bit_and_i64, x & y)
 CUSTOM_BINARY(int64_t, int64_t, bit_or_i64, x | y)
 CUSTOM_BINARY(int64_t, int64_t, bit_xor_i64, x ^ y)
 CUSTOM_BINARY(int64_t, int64_t, shl_i64, x << y)
 CUSTOM_BINARY(int64_t, int64_t, shr_i64, x >> y)
 
-/* pow */
-/* remainder */
-/* shl */
-/* shr */
-
 CUSTOM_BINARY(int64_t, uint8_t, logical_and_i64, x && y)
-CUSTOM_BINARY(uint8_t, uint8_t, logical_and_u8, x && y)
 CUSTOM_BINARY(int64_t, uint8_t, logical_or_i64, x || y)
-CUSTOM_BINARY(uint8_t, uint8_t, logical_or_u8, x || y)
 CUSTOM_BINARY(int64_t, uint8_t, logical_xor_i64, !x != !y)
-CUSTOM_BINARY(uint8_t, uint8_t, logical_xor_u8, !x != !y)
+#endif
+
+/* remainder */
