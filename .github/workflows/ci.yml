@@ -17,14 +17,11 @@ jobs:
         include:
           - elixir_version: 1.16.0
             otp_version: '26.2.1'
-            lock: "nx-edge"
-          - elixir_version: 1.16.0
-            otp_version: '26.2.1'
             lock: "nx06"
             lint: true
           - elixir_version: 1.15.7
             otp_version: '25.3.2.8'
-            lock: "nx06"
+            lock: "nx05"
     steps:
       - uses: actions/checkout@v4
       - run: cargo fmt --check --manifest-path=native/candlex/Cargo.toml
