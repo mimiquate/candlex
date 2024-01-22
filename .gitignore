@@ -27,3 +27,6 @@ candlex-*.tar
 
 # Shared objects build by Rust.
 *.so
+
+/lockfiles/_build/
+/lockfiles/deps/

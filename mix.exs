@@ -4,6 +4,7 @@ defmodule Candlex.MixProject do
   @description "An Nx backend for candle machine learning minimalist framework"
   @source_url "https://github.com/mimiquate/candlex"
   @version "0.1.8"
+  @lockfiles_dir "lockfiles"
 
   def project do
     [
@@ -15,7 +16,10 @@ defmodule Candlex.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       docs: docs(),
-      package: package()
+      package: package(),
+      lockfile: lockfile(),
+      build_path: build_path(),
+      deps_path: deps_path()
     ]
   end
 
@@ -71,5 +75,27 @@ defmodule Candlex.MixProject do
         "GitHub" => @source_url
       }
     ]
+  end
+
+  defp lockfile do
+    if lock() do
+      "#{@lockfiles_dir}/#{lock()}.lock"
+    end
+  end
+
+  defp build_path do
+    if lock() do
+      Path.join([__DIR__, @lockfiles_dir, "_build", lock()])
+    end
+  end
+
+  defp deps_path do
+    if lock() do
+      Path.join([__DIR__, @lockfiles_dir, "deps", lock()])
+    end
+  end
+
+  defp lock do
+    System.get_env("LOCK")
   end
 end
