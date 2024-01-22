@@ -102,6 +102,9 @@ defmodule Candlex.MixProject do
   end
 
   defp lock do
-    System.get_env("LOCK")
+    case System.get_env("LOCK") do
+      "" -> nil
+      lock -> lock
+    end
   end
 end
