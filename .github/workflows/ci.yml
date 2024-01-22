@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CANDLEX_NIF_BUILD: true
-      LOCK: ${{matrix.lock}}
+      LOCK: ${{ matrix.lock }}
     strategy:
       fail-fast: false
       matrix:
