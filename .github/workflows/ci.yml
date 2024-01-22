@@ -33,9 +33,10 @@ jobs:
         with:
           otp-version: ${{matrix.otp_version}}
           elixir-version: ${{matrix.elixir_version}}
-      - run: mix deps.unlock --all
+      - run: mix deps.unlock --all && mix deps.get
         if: ${{ github.event_name == 'schedule' }}
-      - run: mix deps.get
+      - run: mix deps.get --check-locked
+        if: ${{ github.event_name != 'schedule' }}
       - run: mix format --check-formatted
         if: ${{ matrix.lint }}
       - run: mix deps.unlock --check-unused
