@@ -17,7 +17,6 @@ jobs:
         include:
           - elixir_version: 1.16.0
             otp_version: '26.2.1'
-            lock: "nx06"
             lint: true
           - elixir_version: 1.15.7
             otp_version: '25.3.2.8'
