@@ -36,14 +36,14 @@ defmodule Candlex.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:nx, "~> 0.6"},
+      {:nx, "~> 0.5"},
       {:rustler_precompiled, "~> 0.7.0"},
 
       # Optional
       {:rustler, "~> 0.29", optional: true},
 
       # Dev
-      {:bumblebee, "~> 0.4", only: :dev, runtime: false},
+      {:bumblebee, "~> 0.3", only: :dev, runtime: false},
       {:stb_image, "~> 0.6", only: :dev, runtime: false},
       {:ex_doc, "~> 0.31.0", only: :dev, runtime: false}
     ]
