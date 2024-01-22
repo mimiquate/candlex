@@ -80,18 +80,24 @@ defmodule Candlex.MixProject do
   defp lockfile do
     if lock() do
       "#{@lockfiles_dir}/#{lock()}.lock"
+    else
+      "mix.lock"
     end
   end
 
   defp build_path do
     if lock() do
       Path.join([__DIR__, @lockfiles_dir, "_build", lock()])
+    else
+      "_build"
     end
   end
 
   defp deps_path do
     if lock() do
       Path.join([__DIR__, @lockfiles_dir, "deps", lock()])
+    else
+      "deps"
     end
   end
 
