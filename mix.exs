@@ -4,6 +4,7 @@ defmodule Candlex.MixProject do
   @description "An Nx backend for candle machine learning minimalist framework"
   @source_url "https://github.com/mimiquate/candlex"
   @version "0.1.8"
+  @blend_dir "blend"
 
   def project do
     [
@@ -15,7 +16,10 @@ defmodule Candlex.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       docs: docs(),
-      package: package()
+      package: package(),
+      lockfile: lockfile(),
+      build_path: build_path(),
+      deps_path: deps_path()
     ]
   end
 
@@ -39,7 +43,8 @@ defmodule Candlex.MixProject do
       {:rustler, "~> 0.29", optional: true},
 
       # Dev
-      {:bumblebee, "~> 0.4", only: :dev, runtime: false},
+      {:blend, "~> 0.1.0", only: :dev},
+      {:bumblebee, "~> 0.3", only: :dev, runtime: false},
       {:stb_image, "~> 0.6", only: :dev, runtime: false},
       {:ex_doc, "~> 0.31.0", only: :dev, runtime: false}
     ]
@@ -71,5 +76,36 @@ defmodule Candlex.MixProject do
         "GitHub" => @source_url
       }
     ]
+  end
+
+  defp lockfile do
+    if blend() do
+      "#{@blend_dir}/#{blend()}.mix.lock"
+    else
+      "mix.lock"
+    end
+  end
+
+  defp build_path do
+    if blend() do
+      Path.join([__DIR__, @blend_dir, "_build", blend()])
+    else
+      "_build"
+    end
+  end
+
+  defp deps_path do
+    if blend() do
+      Path.join([__DIR__, @blend_dir, "deps", blend()])
+    else
+      "deps"
+    end
+  end
+
+  defp blend do
+    case System.get_env("BLEND") do
+      "" -> nil
+      blend -> blend
+    end
   end
 end
