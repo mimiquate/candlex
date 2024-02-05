@@ -723,7 +723,7 @@ defmodule CandlexTest do
 
       t([1.0, 2, 3])
       |> Nx.exp()
-      |> assert_equal(t([2.7182817459106445, 7.389056205749512, 20.08553695678711]))
+      |> assert_close(t([2.7182817459106445, 7.389056205749512, 20.08553695678711]))
     end
 
     test "expm1" do
@@ -759,7 +759,7 @@ defmodule CandlexTest do
 
       t([1.0, 2, 3])
       |> Nx.log()
-      |> assert_equal(t([0.0, 0.6931471824645996, 1.0986123085021973]))
+      |> assert_close(t([0.0, 0.6931471824645996, 1.0986123085021973]))
     end
 
     test "tanh" do
@@ -796,7 +796,7 @@ defmodule CandlexTest do
 
       t([1.0, 2, 3])
       |> Nx.rsqrt()
-      |> assert_equal(t([1.0, 0.7071067690849304, 0.5773502588272095]))
+      |> assert_close(t([1.0, 0.7071067690849304, 0.5773502588272095]))
     end
 
     test "argmax" do
@@ -887,11 +887,11 @@ defmodule CandlexTest do
 
     test "acos" do
       Nx.acos(0.10000000149011612)
-      |> assert_equal(t(1.4706288576126099))
+      |> assert_close(t(1.4706288576126099))
 
       t([0.10000000149011612, 0.5, 0.8999999761581421])
       |> Nx.acos()
-      |> assert_equal(t([1.4706288576126099, 1.0471975803375244, 0.4510268568992615]))
+      |> assert_close(t([1.4706288576126099, 1.0471975803375244, 0.4510268568992615]))
     end
 
     test "acosh" do
@@ -905,11 +905,11 @@ defmodule CandlexTest do
 
     test "asin" do
       Nx.asin(0.10000000149011612)
-      |> assert_equal(t(0.1001674234867096))
+      |> assert_close(t(0.1001674234867096))
 
       t([0.10000000149011612, 0.5, 0.8999999761581421])
       |> Nx.asin()
-      |> assert_equal(t([0.1001674234867096, 0.5235987901687622, 1.1197694540023804]))
+      |> assert_close(t([0.1001674234867096, 0.5235987901687622, 1.1197694540023804]))
     end
 
     test "asinh" do
@@ -1415,7 +1415,7 @@ defmodule CandlexTest do
 
       t([0.1, 0.2, 0.3])
       |> Nx.mean()
-      |> assert_equal(t(0.2))
+      |> assert_close(t(0.2))
     end
 
     test "pow" do
@@ -1428,11 +1428,11 @@ defmodule CandlexTest do
 
       t([1.0, 2.0, 3.0])
       |> Nx.pow(2)
-      |> assert_equal(t([1.0, 4.0, 9.0]))
+      |> assert_close(t([1.0, 4.0, 9.0]))
 
       2
       |> Nx.pow(t([1.0, 2.0, 3.0]))
-      |> assert_equal(t([2.0, 4.0, 8.0]))
+      |> assert_close(t([2.0, 4.0, 8.0]))
 
       # t([[2], [3]])
       # |> Nx.pow(t([[4, 5]]))
@@ -2969,6 +2969,18 @@ defmodule CandlexTest do
         |> assert_equal(t([11, 22, 33]))
 
         t([1, 2, 3], backend: {Candlex.Backend, device: :cuda})
+        |> Nx.add(t([10, 20, 30], backend: {Candlex.Backend, device: :cpu}))
+        |> assert_equal(t([11, 22, 33]))
+      end
+    end
+
+    if Candlex.Backend.metal_available?() do
+      test "different devices" do
+        t([1, 2, 3], backend: {Candlex.Backend, device: :cpu})
+        |> Nx.add(t([10, 20, 30], backend: {Candlex.Backend, device: :metal}))
+        |> assert_equal(t([11, 22, 33]))
+
+        t([1, 2, 3], backend: {Candlex.Backend, device: :metal})
         |> Nx.add(t([10, 20, 30], backend: {Candlex.Backend, device: :cpu}))
         |> assert_equal(t([11, 22, 33]))
       end

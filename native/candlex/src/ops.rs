@@ -1,5 +1,7 @@
 #[cfg(feature = "cuda")]
 use candle_core::CudaStorage;
+#[cfg(feature = "metal")]
+use candle_core::MetalStorage;
 use candle_core::{CpuStorage, CustomOp1, CustomOp2, Error, Layout, Shape};
 use num_traits::cast::FromPrimitive;
 use num_traits::Float;
@@ -13,13 +15,13 @@ fn erf_inv<T: Float + num_traits::FromPrimitive>(v: T) -> T {
 }
 
 macro_rules! custom_unary_op {
-    ($struct_name:ident, $name:expr, $cpu_closure:expr, ($($dtypes:ident),+)) => {
+    ($struct_name:ident, $name:ident, $cpu_closure:expr, ($($dtypes:ident),+)) => {
         pub(crate) struct $struct_name;
 
         impl CustomOp1 for $struct_name {
             // Box<dyn> does not support const yet, so use a function to get the name.
             fn name(&self) -> &'static str {
-                $name
+                stringify!($name)
             }
 
             /// The forward pass, as run on a cpu device. Note that the storage can use arbitrary strides,
@@ -42,7 +44,7 @@ macro_rules! custom_unary_op {
                             )
                         }
                     )*
-                    s => Err(Error::UnsupportedDTypeForOp(s.dtype(), $name).bt())?
+                    s => Err(Error::UnsupportedDTypeForOp(s.dtype(), stringify!($name)).bt())?
                 }
             }
 
@@ -65,7 +67,7 @@ macro_rules! custom_unary_op {
                         layout: &Layout,
                     ) -> Result<CudaSlice<T>, candle_core::Error> {
                         let src = src.slice(layout.start_offset()..);
-                        let func = device.get_or_load_func(&kernel_name::<T>($name), kernels::CUSTOM_UNARY)?;
+                        let func = device.get_or_load_func(&kernel_name::<T>(stringify!($name)), kernels::CUSTOM_UNARY)?;
                         let dims = layout.shape().dims();
                         let elem_count = layout.shape().elem_count();
                         let launch_config = LaunchConfig::for_num_elems(elem_count as u32);
@@ -94,18 +96,80 @@ macro_rules! custom_unary_op {
                     )
                 )
             }
+
+            #[cfg(feature = "metal")]
+            fn metal_fwd(
+                &self,
+                storage: &MetalStorage,
+                layout: &Layout,
+            ) -> Result<(MetalStorage, Shape), candle_core::Error> {
+                use crate::metal_kernels;
+                use candle_core::{backend::BackendStorage, DType};
+
+                let device = storage.device();
+                let command_buffer = device.command_buffer()?;
+                let elem_count = layout.shape().elem_count();
+                let dtype = storage.dtype();
+                let output_buffer = device.new_buffer(elem_count, dtype, stringify!($name))?;
+
+                if (layout.is_contiguous() && layout.start_offset() == 0) {
+                    let kernel_name = match storage.dtype() {
+                        DType::F32 => metal_kernels::custom_unary::contiguous::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_unary::contiguous::$name::HALF,
+                        DType::I64 => metal_kernels::custom_unary::contiguous::$name::I64,
+                        DType::U32 => metal_kernels::custom_unary::contiguous::$name::U32,
+                        DType::U8 => metal_kernels::custom_unary::contiguous::$name::U8,
+                        dtype => {
+                            candle_core::bail!("Metal contiguous custom unary {} {dtype:?} not implemented", stringify!($name))
+                        }
+                    };
+
+                    metal_kernels::call_custom_unary_contiguous(
+                        &device.device(),
+                        &command_buffer,
+                        kernel_name,
+                        elem_count,
+                        storage.buffer(),
+                        &output_buffer,
+                    ).unwrap();
+                } else {
+                    let kernel_name = match storage.dtype() {
+                        DType::F32 => metal_kernels::custom_unary::strided::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_unary::strided::$name::HALF,
+                        DType::I64 => metal_kernels::custom_unary::strided::$name::I64,
+                        DType::U32 => metal_kernels::custom_unary::strided::$name::U32,
+                        DType::U8 => metal_kernels::custom_unary::strided::$name::U8,
+                        dtype => {
+                            candle_core::bail!("Metal strided custom unary {} {dtype:?} not implemented", stringify!($name))
+                        }
+                    };
+
+                    metal_kernels::call_custom_unary_strided(
+                        &device.device(),
+                        &command_buffer,
+                        kernel_name,
+                        layout.dims(),
+                        layout.stride(),
+                        storage.buffer(),
+                        layout.start_offset() * dtype.size_in_bytes(),
+                        &output_buffer,
+                    ).unwrap();
+                }
+
+                Ok((MetalStorage::new(output_buffer, device.clone(), dtype), layout.shape().clone()))
+            }
         }
     };
 }
 
 macro_rules! custom_unary_bool_op {
-    ($struct_name:ident, $name:expr, $fn_name:ident, ($($dtypes:ident),+)) => {
+    ($struct_name:ident, $name:ident, $fn_name:ident, ($($dtypes:ident),+)) => {
         pub(crate) struct $struct_name;
 
         impl CustomOp1 for $struct_name {
             // Box<dyn> does not support const yet, so use a function to get the name.
             fn name(&self) -> &'static str {
-                $name
+                stringify!($name)
             }
 
             /// The forward pass, as run on a cpu device. Note that the storage can use arbitrary strides,
@@ -130,7 +194,7 @@ macro_rules! custom_unary_bool_op {
                             )
                         }
                     )*
-                    s => Err(Error::UnsupportedDTypeForOp(s.dtype(), $name).bt())?
+                    s => Err(Error::UnsupportedDTypeForOp(s.dtype(), stringify!($name)).bt())?
                 }
             }
 
@@ -154,7 +218,7 @@ macro_rules! custom_unary_bool_op {
                         _wrap: W,
                     ) -> Result<CudaStorageSlice, candle_core::Error> {
                         let src = src.slice(layout.start_offset()..);
-                        let func = device.get_or_load_func(&kernel_name::<T>($name), kernels::CUSTOM_UNARY)?;
+                        let func = device.get_or_load_func(&kernel_name::<T>(stringify!($name)), kernels::CUSTOM_UNARY)?;
                         let dims = layout.shape().dims();
                         let elem_count = layout.shape().elem_count();
                         let launch_config = LaunchConfig::for_num_elems(elem_count as u32);
@@ -183,17 +247,79 @@ macro_rules! custom_unary_bool_op {
                     )
                 )
             }
+
+            #[cfg(feature = "metal")]
+            fn metal_fwd(
+                &self,
+                storage: &MetalStorage,
+                layout: &Layout,
+            ) -> Result<(MetalStorage, Shape), candle_core::Error> {
+                use crate::metal_kernels;
+                use candle_core::{backend::BackendStorage, DType};
+
+                let device = storage.device();
+                let dtype = storage.dtype();
+                let command_buffer = device.command_buffer()?;
+                let elem_count = layout.shape().elem_count();
+                let output_buffer = device.new_buffer(elem_count, DType::U8, stringify!($name))?;
+
+                if (layout.is_contiguous() && layout.start_offset() == 0) {
+                    let kernel_name = match dtype {
+                        DType::F32 => metal_kernels::custom_unary::contiguous::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_unary::contiguous::$name::HALF,
+                        DType::I64 => metal_kernels::custom_unary::contiguous::$name::I64,
+                        DType::U32 => metal_kernels::custom_unary::contiguous::$name::U32,
+                        DType::U8 => metal_kernels::custom_unary::contiguous::$name::U8,
+                        dtype => {
+                            candle_core::bail!("Metal contiguous custom unary {} {dtype:?} not implemented", stringify!($name))
+                        }
+                    };
+
+                    metal_kernels::call_custom_unary_contiguous(
+                        &device.device(),
+                        &command_buffer,
+                        kernel_name,
+                        elem_count,
+                        storage.buffer(),
+                        &output_buffer,
+                    ).unwrap();
+                } else {
+                    let kernel_name = match dtype {
+                        DType::F32 => metal_kernels::custom_unary::strided::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_unary::strided::$name::HALF,
+                        DType::I64 => metal_kernels::custom_unary::strided::$name::I64,
+                        DType::U32 => metal_kernels::custom_unary::strided::$name::U32,
+                        DType::U8 => metal_kernels::custom_unary::strided::$name::U8,
+                        dtype => {
+                            candle_core::bail!("Metal strided custom unary {} {dtype:?} not implemented", stringify!($name))
+                        }
+                    };
+
+                    metal_kernels::call_custom_unary_strided(
+                        &device.device(),
+                        &command_buffer,
+                        kernel_name,
+                        layout.dims(),
+                        layout.stride(),
+                        storage.buffer(),
+                        layout.start_offset() * dtype.size_in_bytes(),
+                        &output_buffer,
+                    ).unwrap();
+                }
+
+                Ok((MetalStorage::new(output_buffer, device.clone(), DType::U8), layout.shape().clone()))
+            }
         }
     };
 }
 
 macro_rules! custom_binary_op {
-    ($struct_name:ident, $name:literal, $cpu_closure:expr, ($($dtypes:ident),+)) => {
+    ($struct_name:ident, $name:ident, $cpu_closure:expr, ($($dtypes:ident),+)) => {
         pub(crate) struct $struct_name;
 
         impl CustomOp2 for $struct_name {
             fn name(&self) -> &'static str {
-                $name
+                stringify!($name)
             }
 
             /// The forward pass, as run on a cpu device. Note that the storage can use arbitrary strides,
@@ -262,7 +388,7 @@ macro_rules! custom_binary_op {
                             .w()?;
                         let src1 = src1.slice(layout1.start_offset()..);
                         let src2 = src2.slice(layout2.start_offset()..);
-                        let func = device.get_or_load_func(&kernel_name::<T>($name), kernels::CUSTOM_BINARY)?;
+                        let func = device.get_or_load_func(&kernel_name::<T>(stringify!($name)), kernels::CUSTOM_BINARY)?;
                         // SAFETY: Set later by running the kernel.
                         let out = unsafe { device.alloc::<T>(elem_count1) }.w()?;
                         let params = (elem_count1, dims1.len(), &dims_and_strides, &src1, &src2, &out);
@@ -287,17 +413,86 @@ macro_rules! custom_binary_op {
                     )
                 )
             }
+
+            #[cfg(feature = "metal")]
+            fn metal_fwd(
+                &self,
+                s1: &MetalStorage,
+                l1: &Layout,
+                s2: &MetalStorage,
+                l2: &Layout,
+            ) -> Result<(MetalStorage, Shape), candle_core::Error> {
+                use crate::metal_kernels;
+                use candle_core::{backend::BackendStorage, DType};
+
+                let device = s1.device();
+                let dtype = s1.dtype();
+                let shape = l1.shape();
+                let elem_count = shape.elem_count();
+                let command_buffer = device.command_buffer()?;
+                let output_buffer = device.new_buffer(elem_count, dtype, stringify!($name))?;
+
+                if (l1.is_contiguous() && l1.start_offset() == 0 && l2.is_contiguous() && l2.start_offset() == 0) {
+                    let kernel_name = match dtype {
+                        DType::F32 => metal_kernels::custom_binary::contiguous::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_binary::contiguous::$name::HALF,
+                        DType::I64 => metal_kernels::custom_binary::contiguous::$name::I64,
+                        DType::U32 => metal_kernels::custom_binary::contiguous::$name::U32,
+                        DType::U8 => metal_kernels::custom_binary::contiguous::$name::U8,
+                        dtype => {
+                            candle_core::bail!("Metal contiguous custom binary {} {dtype:?} not implemented", stringify!($name))
+                        }
+                    };
+
+                    metal_kernels::call_custom_binary_contiguous(
+                        &device.device(),
+                        &command_buffer,
+                        kernel_name,
+                        elem_count,
+                        &s1.buffer(),
+                        &s2.buffer(),
+                        &output_buffer,
+                    ).unwrap();
+                } else {
+                    let kernel_name = match dtype {
+                        DType::F32 => metal_kernels::custom_binary::strided::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_binary::strided::$name::HALF,
+                        DType::I64 => metal_kernels::custom_binary::strided::$name::I64,
+                        DType::U32 => metal_kernels::custom_binary::strided::$name::U32,
+                        DType::U8 => metal_kernels::custom_binary::strided::$name::U8,
+                        dtype => {
+                            candle_core::bail!("Metal strided custom binary {} {dtype:?} not implemented", stringify!($name))
+                        }
+                    };
+
+                    metal_kernels::call_custom_binary_strided(
+                        &device.device(),
+                        &command_buffer,
+                        kernel_name,
+                        l1.dims(),
+                        &s1.buffer(),
+                        l1.stride(),
+                        l1.start_offset() * s1.dtype().size_in_bytes(),
+                        &s2.buffer(),
+                        l2.stride(),
+                        l2.start_offset() * s2.dtype().size_in_bytes(),
+                        &output_buffer,
+                    ).unwrap();
+                }
+
+                Ok((MetalStorage::new(output_buffer, device.clone(), dtype), l1.shape().clone()))
+            }
         }
     }
 }
 
 macro_rules! custom_binary_bool_op {
-    ($struct_name:ident, $name:literal, $cpu_closure:expr, ($($dtypes:ident),+)) => {
+    ($struct_name:ident, $name:ident, $cpu_closure:expr, ($($dtypes:ident),+)) => {
         pub(crate) struct $struct_name;
 
         impl CustomOp2 for $struct_name {
             fn name(&self) -> &'static str {
-                $name
+                stringify!($name)
             }
 
             /// The forward pass, as run on a cpu device. Note that the storage can use arbitrary strides,
@@ -372,7 +567,7 @@ macro_rules! custom_binary_bool_op {
                             .w()?;
                         let src1 = src1.slice(layout1.start_offset()..);
                         let src2 = src2.slice(layout2.start_offset()..);
-                        let func = device.get_or_load_func(&kernel_name::<T>($name), kernels::CUSTOM_BINARY)?;
+                        let func = device.get_or_load_func(&kernel_name::<T>(stringify!($name)), kernels::CUSTOM_BINARY)?;
                         // SAFETY: Set later by running the kernel.
                         let out = unsafe { device.alloc::<u8>(elem_count1) }.w()?;
                         let params = (elem_count1, dims1.len(), &dims_and_strides, &src1, &src2, &out);
@@ -397,58 +592,121 @@ macro_rules! custom_binary_bool_op {
                     )
                 )
             }
+
+            #[cfg(feature = "metal")]
+            fn metal_fwd(
+                &self,
+                s1: &MetalStorage,
+                l1: &Layout,
+                s2: &MetalStorage,
+                l2: &Layout,
+            ) -> Result<(MetalStorage, Shape), candle_core::Error> {
+                use crate::metal_kernels;
+                use candle_core::{backend::BackendStorage, DType};
+
+                let device = s1.device();
+                let shape = l1.shape();
+                let elem_count = shape.elem_count();
+                let command_buffer = device.command_buffer()?;
+                let output_buffer = device.new_buffer(elem_count, DType::U8, stringify!($name))?;
+
+                if (l1.is_contiguous() && l1.start_offset() == 0 && l2.is_contiguous() && l2.start_offset() == 0) {
+                    let kernel_name = match s1.dtype() {
+                        DType::F32 => metal_kernels::custom_binary::contiguous::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_binary::contiguous::$name::HALF,
+                        DType::I64 => metal_kernels::custom_binary::contiguous::$name::I64,
+                        DType::U32 => metal_kernels::custom_binary::contiguous::$name::U32,
+                        DType::U8 => metal_kernels::custom_binary::contiguous::$name::U8,
+                        dtype => {
+                            candle_core::bail!("Metal contiguous custom binary {} {dtype:?} not implemented", stringify!($name))
+                        }
+                    };
+
+                    metal_kernels::call_custom_binary_contiguous(
+                        &device.device(),
+                        &command_buffer,
+                        kernel_name,
+                        elem_count,
+                        &s1.buffer(),
+                        &s2.buffer(),
+                        &output_buffer,
+                    ).unwrap();
+                } else {
+                    let kernel_name = match s1.dtype() {
+                        DType::F32 => metal_kernels::custom_binary::strided::$name::FLOAT,
+                        DType::F16 => metal_kernels::custom_binary::strided::$name::HALF,
+                        DType::I64 => metal_kernels::custom_binary::strided::$name::I64,
+                        DType::U32 => metal_kernels::custom_binary::strided::$name::U32,
+                        DType::U8 => metal_kernels::custom_binary::strided::$name::U8,
+                        dtype => {
+                            candle_core::bail!("Metal strided custom binary {} {dtype:?} not implemented", stringify!($name))
+                        }
+                    };
+
+                    metal_kernels::call_custom_binary_strided(
+                        &device.device(),
+                        &command_buffer,
+                        kernel_name,
+                        l1.dims(),
+                        &s1.buffer(),
+                        l1.stride(),
+                        l1.start_offset() * s1.dtype().size_in_bytes(),
+                        &s2.buffer(),
+                        l2.stride(),
+                        l2.start_offset() * s2.dtype().size_in_bytes(),
+                        &output_buffer,
+                    ).unwrap();
+                }
+
+                Ok((MetalStorage::new(output_buffer, device.clone(), DType::U8), l1.shape().clone()))
+            }
         }
     }
 }
 
-custom_unary_op!(Acos, "acos", |v| v.acos(), (BF16, F16, F32, F64));
-custom_unary_op!(Acosh, "acosh", |v| v.acosh(), (BF16, F16, F32, F64));
-custom_unary_op!(Asin, "asin", |v| v.asin(), (BF16, F16, F32, F64));
-custom_unary_op!(Asinh, "asinh", |v| v.asinh(), (BF16, F16, F32, F64));
-custom_unary_op!(Atan, "atan", |v| v.atan(), (BF16, F16, F32, F64));
-custom_unary_op!(Atanh, "atanh", |v| v.atanh(), (BF16, F16, F32, F64));
-custom_unary_op!(BitNot, "bit_not", |v| !v, (U8, U32, I64));
-custom_unary_op!(Cbrt, "cbrt", |v| v.cbrt(), (BF16, F16, F32, F64));
-custom_unary_op!(Cosh, "cosh", |v| v.cosh(), (BF16, F16, F32, F64));
-custom_unary_op!(Erfc, "erfc", erfc, (BF16, F16, F32, F64));
-custom_unary_op!(ErfInv, "erf_inv", erf_inv, (BF16, F16, F32, F64));
-custom_unary_op!(Expm1, "expm1", |v| v.exp_m1(), (BF16, F16, F32, F64));
-custom_unary_op!(Log1p, "ln_1p", |v| v.ln_1p(), (BF16, F16, F32, F64));
-custom_unary_op!(Sigmoid, "sigmoid", |v| 1. / (1. + (-v).exp()), (F32, F64));
-custom_unary_op!(Sign, "sign", |v| v.signum(), (I64, BF16, F16, F32, F64));
-custom_unary_op!(Sinh, "sinh", |v| v.sinh(), (BF16, F16, F32, F64));
-custom_unary_op!(Tan, "tan", |v| v.tan(), (BF16, F16, F32, F64));
-custom_unary_bool_op!(IsInf, "is_inf", is_infinite, (F32, F64));
-custom_unary_bool_op!(IsNan, "is_nan", is_nan, (F32, F64));
+custom_unary_op!(Acos, acos, |v| v.acos(), (BF16, F16, F32, F64));
+custom_unary_op!(Acosh, acosh, |v| v.acosh(), (BF16, F16, F32, F64));
+custom_unary_op!(Asin, asin, |v| v.asin(), (BF16, F16, F32, F64));
+custom_unary_op!(Asinh, asinh, |v| v.asinh(), (BF16, F16, F32, F64));
+custom_unary_op!(Atan, atan, |v| v.atan(), (BF16, F16, F32, F64));
+custom_unary_op!(Atanh, atanh, |v| v.atanh(), (BF16, F16, F32, F64));
+custom_unary_op!(BitNot, bit_not, |v| !v, (U8, U32, I64));
+custom_unary_op!(Cbrt, cbrt, |v| v.cbrt(), (BF16, F16, F32, F64));
+custom_unary_op!(Cosh, cosh, |v| v.cosh(), (BF16, F16, F32, F64));
+custom_unary_op!(Erfc, erfc, erfc, (BF16, F16, F32, F64));
+custom_unary_op!(ErfInv, erf_inv, erf_inv, (BF16, F16, F32, F64));
+custom_unary_op!(Expm1, expm1, |v| v.exp_m1(), (BF16, F16, F32, F64));
+custom_unary_op!(Log1p, ln_1p, |v| v.ln_1p(), (BF16, F16, F32, F64));
+custom_unary_op!(Sigmoid, sigmoid, |v| 1. / (1. + (-v).exp()), (F32, F64));
+custom_unary_op!(Sign, sign, |v| v.signum(), (I64, BF16, F16, F32, F64));
+custom_unary_op!(Sinh, sinh, |v| v.sinh(), (BF16, F16, F32, F64));
+custom_unary_op!(Tan, tan, |v| v.tan(), (BF16, F16, F32, F64));
+custom_unary_bool_op!(IsInf, is_inf, is_infinite, (F32, F64));
+custom_unary_bool_op!(IsNan, is_nan, is_nan, (F32, F64));
 
-custom_binary_op!(BitAnd, "bit_and", |v1, v2| v1 & v2, (U32, I64));
-custom_binary_op!(BitOr, "bit_or", |v1, v2| v1 | v2, (U32, I64));
-custom_binary_op!(BitXor, "bit_xor", |v1, v2| v1 ^ v2, (U32, I64));
-custom_binary_op!(Atan2, "atan2", |v1, v2| v1.atan2(v2), (F32, F64));
-custom_binary_op!(Pow, "pow", |v1, v2| v1.powf(v2), (F32, F64));
-custom_binary_op!(
-    Remainder,
-    "remainder",
-    |v1, v2| v1 % v2,
-    (U8, I64, F32, F64)
-);
-custom_binary_op!(Shl, "shl", |v1, v2| v1 << v2, (U32, I64));
-custom_binary_op!(Shr, "shr", |v1, v2| v1 >> v2, (U32, I64));
+custom_binary_op!(BitAnd, bit_and, |v1, v2| v1 & v2, (U32, I64));
+custom_binary_op!(BitOr, bit_or, |v1, v2| v1 | v2, (U32, I64));
+custom_binary_op!(BitXor, bit_xor, |v1, v2| v1 ^ v2, (U32, I64));
+custom_binary_op!(Atan2, atan2, |v1, v2| v1.atan2(v2), (F32, F64));
+custom_binary_op!(Pow, pow, |v1, v2| v1.powf(v2), (F32, F64));
+custom_binary_op!(Remainder, remainder, |v1, v2| v1 % v2, (U8, I64, F32, F64));
+custom_binary_op!(Shl, shl, |v1, v2| v1 << v2, (U32, I64));
+custom_binary_op!(Shr, shr, |v1, v2| v1 >> v2, (U32, I64));
 custom_binary_bool_op!(
     LogicalAnd,
-    "logical_and",
+    logical_and,
     |v1, v2| if v1 as i8 != 0 && v2 as i8 != 0 { 1 } else { 0 },
     (U8, U32, I64, F32, F64)
 );
 custom_binary_bool_op!(
     LogicalOr,
-    "logical_or",
+    logical_or,
     |v1, v2| if v1 as i8 == 0 && v2 as i8 == 0 { 0 } else { 1 },
     (U8, U32, I64, F32, F64)
 );
 custom_binary_bool_op!(
     LogicalXor,
-    "logical_xor",
+    logical_xor,
     |v1, v2| if (v1 as i8 != 0) == (v2 as i8 != 0) {
         0
     } else {

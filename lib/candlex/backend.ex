@@ -12,6 +12,7 @@ defmodule Candlex.Backend do
 
   @device_cuda :cuda
   @device_cpu :cpu
+  @device_metal :metal
 
   @impl true
   def init(opts) do
@@ -1198,10 +1199,15 @@ defmodule Candlex.Backend do
   end
 
   defp default_device do
-    if cuda_available?() do
-      @device_cuda
-    else
-      @device_cpu
+    cond do
+      cuda_available?() ->
+        @device_cuda
+
+      metal_available?() ->
+        @device_metal
+
+      true ->
+        @device_cpu
     end
   end
 
@@ -1215,6 +1221,10 @@ defmodule Candlex.Backend do
 
   def cuda_available? do
     Native.is_cuda_available()
+  end
+
+  def metal_available? do
+    Native.is_metal_available()
   end
 
   defp unsupported_dtype(t) do
