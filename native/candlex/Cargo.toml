@@ -13,7 +13,7 @@ crate-type = ["cdylib"]
 candle-core = { git = "https://github.com/huggingface/candle" }
 half = "2.3.1"
 num-traits = "0.2.18"
-rustler = { version = "0.30.0", default-features = false, features = ["derive", "nif_version_2_16"] }
+rustler = { version = "0.31.0", default-features = false, features = ["derive", "nif_version_2_16"] }
 statrs = "0.16.0"
 thiserror = "1.0.57"
 
