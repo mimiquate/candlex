@@ -1,10 +1,11 @@
+Code.compile_file("blend/premix.exs")
+
 defmodule Candlex.MixProject do
   use Mix.Project
 
   @description "An Nx backend for candle machine learning minimalist framework"
   @source_url "https://github.com/mimiquate/candlex"
   @version "0.1.8"
-  @blend_dir "blend"
 
   def project do
     [
@@ -16,11 +17,9 @@ defmodule Candlex.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       docs: docs(),
-      package: package(),
-      lockfile: lockfile(),
-      build_path: build_path(),
-      deps_path: deps_path()
+      package: package()
     ]
+    |> Keyword.merge(maybe_lockfile_option())
   end
 
   # Run "mix help compile.app" to learn about applications.
@@ -78,34 +77,11 @@ defmodule Candlex.MixProject do
     ]
   end
 
-  defp lockfile do
-    if blend() do
-      "#{@blend_dir}/#{blend()}.mix.lock"
-    else
-      "mix.lock"
-    end
-  end
-
-  defp build_path do
-    if blend() do
-      Path.join([__DIR__, @blend_dir, "_build", blend()])
-    else
-      "_build"
-    end
-  end
-
-  defp deps_path do
-    if blend() do
-      Path.join([__DIR__, @blend_dir, "deps", blend()])
-    else
-      "deps"
-    end
-  end
-
-  defp blend do
-    case System.get_env("BLEND") do
-      "" -> nil
-      blend -> blend
+  def maybe_lockfile_option do
+    case System.get_env("MIX_LOCKFILE") do
+      nil -> []
+      "" -> []
+      lockfile -> [lockfile: lockfile]
     end
   end
 end
