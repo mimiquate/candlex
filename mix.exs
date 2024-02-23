@@ -43,7 +43,7 @@ defmodule Candlex.MixProject do
 
       # Dev
       {:blend, "~> 0.1.0", only: :dev},
-      {:bumblebee, "~> 0.3", only: :dev, runtime: false},
+      {:bumblebee, "~> 0.4", only: :dev, runtime: false},
       {:stb_image, "~> 0.6", only: :dev, runtime: false},
       {:ex_doc, "~> 0.31.0", only: :dev, runtime: false}
     ]

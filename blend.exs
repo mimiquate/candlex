@@ -1,3 +1,3 @@
 %{
-  bumblebee03: [{:bumblebee, "~> 0.3.0"}],
+  bumblebee04: [{:bumblebee, "~> 0.4.0"}],
 }
