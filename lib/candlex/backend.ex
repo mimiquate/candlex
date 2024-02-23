@@ -1064,19 +1064,19 @@ defmodule Candlex.Backend do
     end
   end
 
-  for op <- [
-        :map,
-        # TODO: Remove after nx 0.7 is released
-        :random_normal,
-        # TODO: Remove after nx 0.7 is released
-        :random_uniform,
-        :triangular_solve,
-        :window_min,
-        :window_product
-      ] do
+  for op <- [:map, :triangular_solve, :window_min, :window_product] do
     @impl true
     def unquote(op)(_out, _tensor, _, _) do
       raise "unsupported Candlex.Backend.#{unquote(op)} function"
+    end
+  end
+
+  if Application.spec(:nx, :vsn) |> List.to_string() |> Version.match?("~> 0.6.0") do
+    for op <- [:random_normal, :random_uniform] do
+      @impl true
+      def unquote(op)(_out, _tensor, _, _) do
+        raise "unsupported Candlex.Backend.#{unquote(op)} function"
+      end
     end
   end
 
