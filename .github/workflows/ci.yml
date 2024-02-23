@@ -22,7 +22,7 @@ jobs:
             otp_version: '25.3.2.8'
           - elixir_version: 1.15.7
             otp_version: '25.3.2.8'
-            blend: "bumblebee03"
+            blend: "nx06"
     steps:
       - uses: actions/checkout@v4
       - run: cargo fmt --check --manifest-path=native/candlex/Cargo.toml
