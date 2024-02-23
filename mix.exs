@@ -77,7 +77,7 @@ defmodule Candlex.MixProject do
     ]
   end
 
-  def maybe_lockfile_option do
+  defp maybe_lockfile_option do
     case System.get_env("MIX_LOCKFILE") do
       nil -> []
       "" -> []
