@@ -11,7 +11,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 candle-core = "0.4.1"
-half = "2.3.1"
+half = "2.4.0"
 num-traits = "0.2.18"
 rustler = { version = "0.31.0", default-features = false, features = ["derive", "nif_version_2_16"] }
 statrs = "0.16.0"
