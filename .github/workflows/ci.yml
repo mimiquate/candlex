@@ -35,8 +35,7 @@ jobs:
         with:
           path: |
             _build/*/lib/candlex/native/candlex/
-            .cargo/registry/cache
-            .cargo/registry/index
+            .cargo/registry/
           key: cargo-${{ runner.os }}-${{ hashFiles('native/candlex/Cargo.lock') }}
       - run: mix deps.unlock --all && mix deps.get
         if: ${{ github.event_name == 'schedule' }}
