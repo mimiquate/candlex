@@ -31,6 +31,10 @@ jobs:
         with:
           otp-version: ${{matrix.otp_version}}
           elixir-version: ${{matrix.elixir_version}}
+      - uses: actions/cache@v4
+        with:
+          path: target
+          key: cargo-${{ runner.os }}-${{ hashFiles('native/candlex/Cargo.lock') }}
       - run: mix deps.unlock --all && mix deps.get
         if: ${{ github.event_name == 'schedule' }}
       - run: mix deps.get --check-locked
