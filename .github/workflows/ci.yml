@@ -9,7 +9,6 @@ jobs:
   main:
     runs-on: ubuntu-latest
     env:
-      MIX_ENV: test
       CANDLEX_NIF_BUILD: true
       BLEND: ${{ matrix.blend }}
     strategy:
@@ -34,7 +33,7 @@ jobs:
           elixir-version: ${{matrix.elixir_version}}
       - uses: actions/cache@v4
         with:
-          path: _build/test/lib/candlex/native/candlex/
+          path: _build/*/lib/candlex/native/candlex/
           key: cargo-${{ runner.os }}-${{ hashFiles('native/candlex/Cargo.lock') }}
       - run: mix deps.unlock --all && mix deps.get
         if: ${{ github.event_name == 'schedule' }}
