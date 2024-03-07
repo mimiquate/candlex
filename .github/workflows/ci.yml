@@ -33,7 +33,7 @@ jobs:
           elixir-version: ${{matrix.elixir_version}}
       - uses: actions/cache@v4
         with:
-          path: target
+          path: native/candlex/target
           key: cargo-${{ runner.os }}-${{ hashFiles('native/candlex/Cargo.lock') }}
       - run: mix deps.unlock --all && mix deps.get
         if: ${{ github.event_name == 'schedule' }}
