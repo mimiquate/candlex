@@ -32,6 +32,8 @@ jobs:
           otp-version: ${{matrix.otp_version}}
           elixir-version: ${{matrix.elixir_version}}
       - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: native/candlex
       - run: mix deps.unlock --all && mix deps.get
         if: ${{ github.event_name == 'schedule' }}
       - run: mix deps.get --check-locked
