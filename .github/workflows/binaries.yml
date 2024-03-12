@@ -56,7 +56,7 @@ jobs:
           use-cross: ${{ matrix.use-cross }}
           nif-version: ${{ env.NIF_VERSION }}
 
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v2
         with:
           draft: true
           files: ${{ steps.precompile.outputs.file-path }}
@@ -97,7 +97,7 @@ jobs:
           variant: cuda
           cargo-args: "--features cuda"
 
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v2
         with:
           draft: true
           files: ${{ steps.precompile.outputs.file-path }}
