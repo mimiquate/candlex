@@ -18,7 +18,7 @@ statrs = "0.16.0"
 thiserror = "1.0.58"
 
 [build-dependencies]
-bindgen_cuda = { version = "0.1.4", optional = true }
+bindgen_cuda = { version = "0.1.5", optional = true }
 
 [features]
 cuda = ["candle-core/cuda", "dep:bindgen_cuda"]
