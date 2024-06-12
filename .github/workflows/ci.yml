@@ -15,13 +15,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - elixir_version: 1.16.0
-            otp_version: '26.2.1'
+          - elixir: '1.17'
+            erlang: '27.0'
             lint: true
-          - elixir_version: 1.15.7
-            otp_version: '25.3.2.8'
-          - elixir_version: 1.15.7
-            otp_version: '25.3.2.8'
+          - elixir: '1.16'
+            erlang: '26.2.5'
+          - elixir: '1.15'
+            erlang: '25.3.2.12'
+          - elixir: '1.15'
+            erlang: '25.3.2.12'
             blend: "nx06"
     steps:
       - uses: actions/checkout@v4
@@ -29,8 +31,8 @@ jobs:
         if: ${{ matrix.lint }}
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: ${{matrix.otp_version}}
-          elixir-version: ${{matrix.elixir_version}}
+          otp-version: ${{ matrix.erlang }}
+          elixir-version: ${{ matrix.elixir }}
       - run: mix deps.unlock --all && mix deps.get
         if: ${{ github.event_name == 'schedule' }}
       - run: mix deps.get --check-locked
