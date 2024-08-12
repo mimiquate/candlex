@@ -44,7 +44,7 @@ defmodule Candlex.MixProject do
       {:rustler, "~> 0.29", optional: true},
 
       # Dev
-      {:blend, "~> 0.3.0", only: :dev},
+      {:blend, "~> 0.4.0", only: :dev},
       {:bumblebee, "~> 0.4", only: :dev, runtime: false},
       {:stb_image, "~> 0.6", only: :dev, runtime: false},
       {:ex_doc, "~> 0.34.0", only: :dev, runtime: false}
