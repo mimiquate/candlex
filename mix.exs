@@ -38,7 +38,7 @@ defmodule Candlex.MixProject do
   defp deps do
     [
       {:nx, "~> 0.6"},
-      {:rustler_precompiled, "~> 0.7.0"},
+      {:rustler_precompiled, "~> 0.8.0"},
 
       # Optional
       {:rustler, "~> 0.29", optional: true},
