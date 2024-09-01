@@ -425,7 +425,6 @@ custom_binary_op!(BitAnd, "bit_and", |v1, v2| v1 & v2, (U32, I64));
 custom_binary_op!(BitOr, "bit_or", |v1, v2| v1 | v2, (U32, I64));
 custom_binary_op!(BitXor, "bit_xor", |v1, v2| v1 ^ v2, (U32, I64));
 custom_binary_op!(Atan2, "atan2", |v1, v2| v1.atan2(v2), (F32, F64));
-custom_binary_op!(Pow, "pow", |v1, v2| v1.powf(v2), (F32, F64));
 custom_binary_op!(
     Remainder,
     "remainder",
