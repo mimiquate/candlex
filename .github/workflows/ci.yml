@@ -22,6 +22,7 @@ jobs:
             erlang: '26.2.5'
           - elixir: '1.15'
             erlang: '25.3.2.12'
+            blend: "nx07"
           - elixir: '1.15'
             erlang: '25.3.2.12'
             blend: "nx06"
