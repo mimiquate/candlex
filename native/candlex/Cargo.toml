@@ -15,7 +15,7 @@ half = "2.4.1"
 num-traits = "0.2.19"
 rustler = { version = "0.34.0", default-features = false, features = ["nif_version_2_16"] }
 statrs = "0.17.1"
-thiserror = "1.0.65"
+thiserror = "2.0.10"
 
 [build-dependencies]
 bindgen_cuda = { version = "0.1.5", optional = true }
