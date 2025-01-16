@@ -37,7 +37,7 @@ defmodule Candlex.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:nx, "~> 0.6"},
+      {:nx, "~> 0.7"},
       {:rustler_precompiled, "~> 0.8.2"},
 
       # Optional

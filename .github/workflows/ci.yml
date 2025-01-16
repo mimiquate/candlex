@@ -26,7 +26,7 @@ jobs:
             erlang: '25.3.2.16'
           - elixir: '1.15'
             erlang: '25.3.2.16'
-            blend: "nx06"
+            blend: "nx07"
     steps:
       - uses: actions/checkout@v4
       - run: cargo fmt --check --manifest-path=native/candlex/Cargo.toml
