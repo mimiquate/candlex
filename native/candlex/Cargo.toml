@@ -10,7 +10,7 @@ path = "src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-candle-core = "0.6.0"
+candle-core = "0.7.2"
 half = "2.4.1"
 num-traits = "0.2.19"
 rustler = { version = "0.34.0", default-features = false, features = ["nif_version_2_16"] }
