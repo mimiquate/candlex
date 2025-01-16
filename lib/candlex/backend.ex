@@ -1041,7 +1041,8 @@ defmodule Candlex.Backend do
         :count_leading_zeros,
         :imag,
         :population_count,
-        :real
+        :real,
+        :to_pointer
       ] do
     @impl true
     def unquote(op)(_out, _tensor) do
@@ -1056,7 +1057,8 @@ defmodule Candlex.Backend do
         :lu,
         :product,
         :qr,
-        :sort
+        :sort,
+        :stack
       ] do
     @impl true
     def unquote(op)(_out, _tensor, _) do
@@ -1064,7 +1066,7 @@ defmodule Candlex.Backend do
     end
   end
 
-  for op <- [:map, :triangular_solve, :window_min, :window_product] do
+  for op <- [:triangular_solve, :window_min, :window_product] do
     @impl true
     def unquote(op)(_out, _tensor, _, _) do
       raise "unsupported Candlex.Backend.#{unquote(op)} function"
@@ -1081,6 +1083,7 @@ defmodule Candlex.Backend do
   end
 
   for op <- [
+        :from_pointer,
         :indexed_put,
         :reduce
       ] do
